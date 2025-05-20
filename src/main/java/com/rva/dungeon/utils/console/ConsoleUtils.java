@@ -43,6 +43,11 @@ public class ConsoleUtils {
     public static final String UNDERLINE = "\u001b[4m";
     public static final String INVERT = "\u001b[7m";
 
+    // Prompts
+    public static final String QUERY_PROMPT = BRIGHT_MAGENTA  + RETOUR + "¤> " + RESET;
+    public static final String COMMAND_PROMPT = BRIGHT_MAGENTA  + "?> " + RESET;
+    public static final String TEXT_PROMPT = BRIGHT_MAGENTA  + "$> " + RESET;
+
     /**
      * Méthode pour obtenir un scanner unique
      * @return - Scanner
@@ -105,24 +110,24 @@ public class ConsoleUtils {
      */
     public static void afficherCouleur(String colorCode, String text, Object... args) {
         String message = String.format(text, args);
-        impressionManuelle("$> " + colorCode + message + RESET);
+        impressionManuelle(TEXT_PROMPT + colorCode + message + RESET);
     }
 
     public static String demander(String question, Object... args) {
         String message = String.format(question, args);
-        System.out.print(RETOUR + "\n¤> ");
+        System.out.print(RETOUR + QUERY_PROMPT);
         impressionManuelle(message);
         Scanner scanner = getScanner();
-        System.out.print(RETOUR + "?> ");
+        System.out.print(RETOUR + COMMAND_PROMPT);
         return scanner.nextLine();
     }
 
     public static String demanderCouleur(String colorCode, String question, Object... args) {
         String message = String.format(question, args);
-        System.out.print(RETOUR + "\n¤> ");
+        System.out.print(RETOUR + QUERY_PROMPT);
         impressionManuelle(colorCode + message + RESET);
         Scanner scanner = getScanner();
-        System.out.print(RETOUR + "?> ");
+        System.out.print(RETOUR + COMMAND_PROMPT);
         return scanner.nextLine();
     }
 

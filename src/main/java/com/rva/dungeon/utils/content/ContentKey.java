@@ -6,6 +6,7 @@ public enum ContentKey {
     COMMON_GREETING("common.greeting"),
     COMMON_GOODBYE("common.goodbye"),
     COMMON_PROMPT("common.prompt"),
+    COMMON_COMMAND_ACTIONS("common.command.actions"),
     COMMON_COMMAND_UNKNOWN("common.command.unknown"),
     COMMON_COMMAND_QUIT("common.command.quit"),
     COMMON_COMMAND_EXPLORE("common.command.explore"),
