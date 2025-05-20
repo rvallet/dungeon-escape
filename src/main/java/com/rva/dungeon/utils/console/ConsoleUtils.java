@@ -1,8 +1,15 @@
 package com.rva.dungeon.utils.console;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Random;
 import java.util.Scanner;
 
 public class ConsoleUtils {
+
+    // Logger
+    private static final Logger logger = LoggerFactory.getLogger(ConsoleUtils.class);
 
     // Scanner pour la saisie utilisateur
     private static Scanner scanner;
@@ -47,20 +54,64 @@ public class ConsoleUtils {
         return scanner;
     }
 
-    public static void afficher(String reponse, Object... args) {
-        String message = String.format(reponse, args);
-        System.out.println(message + RETOUR);
+    /**
+     * Méthode pour afficher un message dans la console
+     * @param sansEffets - Si vrai, affiche le message sans effets supplémentaires
+     * @param text - Message à afficher
+     * @param args - Arguments pour formater le message
+     */
+    public static void afficher(boolean sansEffets, String text, Object... args) {
+        String message = String.format(text, args);
+        if (sansEffets) {
+            System.out.println(message + RETOUR);
+        } else {
+            impressionManuelle(message + RETOUR);
+        }
     }
 
-    public static void afficherCouleur(String colorCode, String reponse, Object... args) {
-        String message = String.format(reponse, args);
-        System.out.println("$> " + colorCode + message + RESET);
+    /**
+     * Méthode pour afficher un message dans la console.
+     * Par défaut, le message est affiché avec des effets supplémentaires.
+     * @param text - Message à afficher
+     * @param args - Arguments pour formater le message
+     */
+    public static void afficher(String text, Object... args) {
+        String message = String.format(text, args);
+            impressionManuelle(message + RETOUR);
+    }
+
+    /**
+     * Méthode pour afficher un message colorisé dans la console
+     * @param sansEffets - Si vrai, affiche le message sans effets supplémentaires
+     * @param colorCode - Code couleur ANSI
+     * @param text - Message à afficher
+     * @param args - Arguments pour formater le message
+     */
+    public static void afficherCouleur(boolean sansEffets, String colorCode, String text, Object... args) {
+        String message = String.format(text, args);
+        if (sansEffets) {
+            System.out.println(colorCode + message + RESET + RETOUR);
+        } else {
+            impressionManuelle(colorCode + message + RESET + RETOUR);
+        }
+    }
+
+    /**
+     * Méthode pour afficher un message colorisé dans la console.
+     * Par défaut, le message est affiché avec des effets supplémentaires.
+     * @param colorCode - Code couleur ANSI
+     * @param text - Message à afficher
+     * @param args - Arguments pour formater le message
+     */
+    public static void afficherCouleur(String colorCode, String text, Object... args) {
+        String message = String.format(text, args);
+        impressionManuelle("$> " + colorCode + message + RESET);
     }
 
     public static String demander(String question, Object... args) {
         String message = String.format(question, args);
-        System.out.print(RETOUR + "¤> ");
-        System.out.print(message);
+        System.out.print(RETOUR + "\n¤> ");
+        impressionManuelle(message);
         Scanner scanner = getScanner();
         System.out.print(RETOUR + "?> ");
         return scanner.nextLine();
@@ -68,8 +119,8 @@ public class ConsoleUtils {
 
     public static String demanderCouleur(String colorCode, String question, Object... args) {
         String message = String.format(question, args);
-        System.out.print(RETOUR + "¤> ");
-        System.out.print(colorCode + message + RESET);
+        System.out.print(RETOUR + "\n¤> ");
+        impressionManuelle(colorCode + message + RESET);
         Scanner scanner = getScanner();
         System.out.print(RETOUR + "?> ");
         return scanner.nextLine();
@@ -92,6 +143,19 @@ public class ConsoleUtils {
      */
     public static String format(String message, String colorCode) {
         return colorMessage(message, colorCode);
+    }
+
+    public static void impressionManuelle(String str) {
+        Random rand = new Random();
+        for (int i = 0; i < str.length(); i++) {
+            System.out.print(str.charAt(i));
+            try {
+                Thread.sleep(10 + rand.nextInt(40));
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
 }

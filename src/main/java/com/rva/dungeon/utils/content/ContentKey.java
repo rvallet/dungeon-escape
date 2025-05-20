@@ -2,6 +2,7 @@ package com.rva.dungeon.utils.content;
 
 public enum ContentKey {
 
+    COMMON_QUERY_PLAYER_NAME("common.query.player.name"),
     COMMON_GREETING("common.greeting"),
     COMMON_GOODBYE("common.goodbye"),
     COMMON_PROMPT("common.prompt"),
