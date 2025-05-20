@@ -1,0 +1,24 @@
+<configuration>
+
+    <!-- Appender pour le fichier -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/dungeon-escape-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <!-- Vous pouvez définir un layout personnalisé si vous voulez -->
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender pour la console (tel que défini par Spring Boot, mais ici on ne le touche pas) -->
+    <!-- Pas besoin de redéfinir la console si tu utilises le pattern dans properties -->
+
+    <!-- Configuration du root logger -->
+    <root level="INFO">
+        <!-- Ajoute le appender file pour tout level INFO et plus -->
+        <appender-ref ref="FILE" />
+    </root>
+
+</configuration>
