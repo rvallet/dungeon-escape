@@ -7,7 +7,8 @@ public enum Action {
 
     QUIT(1, ContentKey.ACTION_CODE_1),
     EXPLORE(2, ContentKey.ACTION_CODE_2),
-    HELP(3, ContentKey.ACTION_CODE_3);
+    HELP(3, ContentKey.ACTION_CODE_3),
+    CHARACTER(4, ContentKey.ACTION_CODE_4);
 
     private final int number;
     private final ContentKey code;

@@ -25,40 +25,16 @@ public class GameServiceImpl implements GameService {
     @Override
     public void startGame() {
         choixLangue();
-
-        ConsoleUtils.afficher(ConsoleUtils.BRIGHT_BLUE + contentService.getString(ContentKey.DUNGEON_INTRO) + ConsoleUtils.RESET);
+        afficherIntroduction();
         demanderNomJoueur();
-        accueillirJoueur(player.getName());
-
+        accueillirJoueur();
         afficherActionsDisponibles();
-
-        while (gameStarted) {
-
-            String input = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_PROMPT));
-            Action action = Action.fromInput(input, contentService);
-            switch (action) {
-                case QUIT:
-                    quitterJeu();
-                    break;
-                case EXPLORE:
-                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.DUNGEON_INTRO));
-                    break;
-                case HELP:
-                    afficherActionsDisponibles();
-                    break;
-                case null:
-                default:
-                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_COMMAND_UNKNOWN));
-                    break;
-            }
-
-        }
-
+        lancerBoucleDuJeux();
     }
 
     private void choixLangue(){
         ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_LANGUAGE));
-        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_BLUE, "Votre choix :");
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_BLUE, contentService.getString(ContentKey.INIT_SELECT_LANGUAGE_PROMPT));
         switch (choix){
             case "2":
                 contentService.setLocale(Locale.forLanguageTag("en-US"));
@@ -66,8 +42,11 @@ public class GameServiceImpl implements GameService {
             case "1":
             default:
                 contentService.setLocale(Locale.forLanguageTag("fr-FR"));
-
         }
+    }
+
+    private void afficherIntroduction(){
+        ConsoleUtils.afficher(ConsoleUtils.BRIGHT_BLUE + contentService.getString(ContentKey.DUNGEON_INTRO) + ConsoleUtils.RESET);
     }
 
     private void demanderNomJoueur() {
@@ -76,8 +55,8 @@ public class GameServiceImpl implements GameService {
     }
 
 
-    private void accueillirJoueur(String playerName) {
-        ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING), playerName);
+    private void accueillirJoueur() {
+        ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING), player.getName());
     }
 
     private void afficherActionsDisponibles() {
@@ -92,6 +71,41 @@ public class GameServiceImpl implements GameService {
                      Action.getActionList(contentService) +
                      ConsoleUtils.RESET
         );
+    }
+
+    private void afficherInformationJoueur() {
+        ConsoleUtils.afficher(
+                ConsoleUtils.YELLOW +
+                    player.toFormatedString(contentService) +
+                    ConsoleUtils.RESET
+        );
+    }
+
+    private void lancerBoucleDuJeux(){
+        while (gameStarted) {
+
+            String input = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_PROMPT));
+            Action action = Action.fromInput(input, contentService);
+            switch (action) {
+                case QUIT:
+                    quitterJeu();
+                    break;
+                case EXPLORE:
+                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.DUNGEON_INTRO));
+                    break;
+                case HELP:
+                    afficherActionsDisponibles();
+                    break;
+                case CHARACTER:
+                    afficherInformationJoueur();
+                    break;
+                case null:
+                default:
+                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_COMMAND_UNKNOWN));
+                    break;
+            }
+
+        }
     }
 
     private void quitterJeu() {
