@@ -25,6 +25,9 @@ public enum ContentKey {
     ENEMY_TYPE_3("enemy.type.3"),
     ENEMY_TYPE_4("enemy.type.4"),
 
+    ROOM_NAME("room.name"),
+    ROOM_DESCRIPTION("room.description"),
+
     COMMON_QUERY_PLAYER_NAME("common.query.player.name"),
     COMMON_GREETING("common.greeting"),
     COMMON_GOODBYE("common.goodbye"),

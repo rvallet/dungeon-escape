@@ -2,6 +2,7 @@ package com.rva.dungeon.service.impl;
 
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
+import com.rva.dungeon.model.Dungeon;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.GameService;
 import com.rva.dungeon.utils.console.ConsoleUtils;
@@ -9,17 +10,22 @@ import com.rva.dungeon.utils.content.ContentKey;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements GameService {
 
     private final ContentService contentService;
+    private final DungeonServiceImpl dungeonService;
 
     private boolean gameStarted = true;
+    private Dungeon dungeon;
     public static Player player;
 
     public GameServiceImpl(ContentService contentService) {
+
         this.contentService = contentService;
+        this.dungeonService = new DungeonServiceImpl();
     }
 
     @Override
@@ -28,6 +34,7 @@ public class GameServiceImpl implements GameService {
         afficherIntroduction();
         demanderNomJoueur();
         accueillirJoueur();
+        dungeon = dungeonService.generate(5, contentService);
         afficherActionsDisponibles();
         lancerBoucleDuJeux();
     }
@@ -81,6 +88,37 @@ public class GameServiceImpl implements GameService {
         );
     }
 
+    private void explorerDonjon() {
+
+/*        ConsoleUtils.afficher(
+                ConsoleUtils.YELLOW +
+                     dungeon.getRooms().get(0).getName() + ConsoleUtils.RETOUR +
+                     dungeon.getRooms().get(0).getDescription() + ConsoleUtils.RETOUR +
+                     dungeon.getRooms().get(0).getPassages().getFirst().getDirection().getContent(contentService) +
+                     ConsoleUtils.RESET
+        );*/
+
+        // TODO : Afficher les salles du donjon (DEBUG Dungeon)
+        dungeon.getRooms().forEach(room -> {
+            // Crée une liste de descriptions pour chaque passage
+            String passagesListe = room.getPassages().stream()
+                    .map(p -> p.getDirection().getContent(contentService))
+                    .collect(Collectors.joining(", "));
+
+            // Affiche la salle + passages
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            room.getName() + ConsoleUtils.RETOUR +
+                            room.getDescription() + ConsoleUtils.RETOUR +
+                            "Passages : " + passagesListe + ConsoleUtils.RESET
+            );
+        });
+
+    }
+
+    /**
+     * Boucle principale du jeu
+     */
     private void lancerBoucleDuJeux(){
         while (gameStarted) {
 
@@ -91,7 +129,7 @@ public class GameServiceImpl implements GameService {
                     quitterJeu();
                     break;
                 case EXPLORE:
-                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.DUNGEON_INTRO));
+                    explorerDonjon();
                     break;
                 case HELP:
                     afficherActionsDisponibles();
