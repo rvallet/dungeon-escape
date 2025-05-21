@@ -3,6 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<!-- Parent Spring Boot -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -10,32 +11,56 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
+	<!-- Project Information -->
 	<groupId>com.rva</groupId>
 	<artifactId>dungeon</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>dungeon-escape</name>
 	<description>Jeu de donjon textuel : Escape from the Dungeon</description>
 
+	<!-- Définition des propriétés de configuration du projet -->
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>21</java.version>
 	</properties>
 
+	<!-- Dépendances du projet -->
 	<dependencies>
 
+		<!-- Spring Data MongoDB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
+		<!-- Mongo Flapdoodle Database -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<version>4.20.0</version>
+			<!-- Portée de cette dépendance pour qu'elle ne soit utilisée que lors des tests -->
+			<scope>test</scope>
 		</dependency>
 
+		<!-- Spring Boot Starter Test  - Permet d'effectuer des tests unitaires et d'intégration -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<!-- On exclut la dépendance JUnit Vintage pour éviter les conflits avec JUnit 5 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Spring Security - Pour la sécurité de l'application (en vue d'une persistance et d'un accès pas utilisateur -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<dependency>
@@ -48,10 +73,27 @@
 
 	<build>
 		<plugins>
+			<!-- Plugin Maven pour Spring Boot, pour la création et l'exécution -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!-- Plugin Maven pour compiler le code Java, spécifie la version de Java à utiliser -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+				</configuration>
+			</plugin>
+			<!-- Plugin Maven SureFire pour les tests unitaires -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+
 		</plugins>
 	</build>
 

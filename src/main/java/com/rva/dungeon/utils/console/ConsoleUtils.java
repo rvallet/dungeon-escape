@@ -1,5 +1,6 @@
 package com.rva.dungeon.utils.console;
 
+import com.rva.dungeon.utils.random.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,11 +152,10 @@ public class ConsoleUtils {
     }
 
     public static void impressionManuelle(String str) {
-        Random rand = new Random();
         for (int i = 0; i < str.length(); i++) {
             System.out.print(str.charAt(i));
             try {
-                Thread.sleep(10 + rand.nextInt(40));
+                Thread.sleep(10 + RandomUtils.randomMax(40));
             } catch (InterruptedException e) {
                 logger.error(e.getMessage());
                 Thread.currentThread().interrupt();

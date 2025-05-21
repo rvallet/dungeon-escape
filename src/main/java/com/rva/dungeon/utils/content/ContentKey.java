@@ -10,10 +10,20 @@ public enum ContentKey {
     ACTION_CODE_3("action.code.3"),
     ACTION_CODE_4("action.code.4"),
 
+    DIRECTION_NORTH("direction.north"),
+    DIRECTION_SOUTH("direction.south"),
+    DIRECTION_EAST("direction.east"),
+    DIRECTION_WEST("direction.west"),
+
     PLAYER_NAME("player.name"),
     PLAYER_HEALTH("player.health"),
     PLAYER_DEFENSE("player.defense"),
     PLAYER_ATTACK("player.attack"),
+
+    ENEMY_TYPE_1("enemy.type.1"),
+    ENEMY_TYPE_2("enemy.type.2"),
+    ENEMY_TYPE_3("enemy.type.3"),
+    ENEMY_TYPE_4("enemy.type.4"),
 
     COMMON_QUERY_PLAYER_NAME("common.query.player.name"),
     COMMON_GREETING("common.greeting"),
