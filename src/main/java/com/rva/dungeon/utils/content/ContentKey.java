@@ -2,6 +2,12 @@ package com.rva.dungeon.utils.content;
 
 public enum ContentKey {
 
+    INIT_SELECT_LANGUAGE("init.select.language"),
+
+    ACTION_CODE_1("action.code.1"),
+    ACTION_CODE_2("action.code.2"),
+    ACTION_CODE_3("action.code.3"),
+
     COMMON_QUERY_PLAYER_NAME("common.query.player.name"),
     COMMON_GREETING("common.greeting"),
     COMMON_GOODBYE("common.goodbye"),
