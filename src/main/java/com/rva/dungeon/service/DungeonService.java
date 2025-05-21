@@ -4,6 +4,6 @@ import com.rva.dungeon.model.Dungeon;
 
 public interface DungeonService {
 
-    Dungeon generate(int numberOfRooms);
+    Dungeon generate(int numberOfRooms, ContentService contentService);
 
 }

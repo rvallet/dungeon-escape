@@ -3,8 +3,10 @@ package com.rva.dungeon.service.impl;
 import com.rva.dungeon.model.Dungeon;
 import com.rva.dungeon.model.Passage;
 import com.rva.dungeon.model.Room;
+import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.DungeonService;
 import com.rva.dungeon.enumerated.Direction;
+import com.rva.dungeon.utils.content.ContentKey;
 import com.rva.dungeon.utils.random.RandomUtils;
 
 import java.util.ArrayList;
@@ -13,12 +15,9 @@ import java.util.List;
 public class DungeonServiceImpl implements DungeonService {
 
     @Override
-    public Dungeon generate(int numberOfRooms) {
+    public Dungeon generate(int numberOfRooms, ContentService contentService) {
         // Création des salles
-        List<Room> rooms = generateRooms(numberOfRooms);
-
-        // Création des passages entre les salles
-        generateRandomPassage(rooms);
+        List<Room> rooms = generateRooms(numberOfRooms, contentService);
 
         // Génération des enemies
         // TODO : Génération des ennemis
@@ -28,18 +27,21 @@ public class DungeonServiceImpl implements DungeonService {
         // TODO : Génération des objets
         generateItems(rooms);
 
+        // Création des passages entre les salles
+        generateRandomPassage(rooms);
+
         // Ajout des salles au donjon
         return new Dungeon(rooms);
     }
 
-    private List<Room> generateRooms(int numberOfRooms) {
+    private List<Room> generateRooms(int numberOfRooms, ContentService contentService) {
         List<Room> rooms = new ArrayList<>();
 
         for (int i = 0; i < numberOfRooms; i++) {
             Room room = new Room(
-                    "Salle " + (i + 1),
+                    contentService.getString(ContentKey.ROOM_NAME) + (i + 1),
                     i + 1,
-                    "Description salle " + (i + 1)
+                    contentService.getString(ContentKey.ROOM_DESCRIPTION)
             );
             room.setPassages(new ArrayList<>());
             rooms.add(room);
@@ -47,53 +49,49 @@ public class DungeonServiceImpl implements DungeonService {
         return rooms;
     }
 
-    private void generatePassage(List<Room> rooms) {
-        if (rooms.size() < 2) return;
-        Room entree = rooms.get(0);
-        Room sortie = rooms.get(rooms.size() - 1);
-        Room salleInter = rooms.get(1);
-
-        // Passage simple entre entrée et salle intermédiaire
-        entree.getPassages().add(new Passage(Direction.SOUTH, salleInter, false));
-        salleInter.getPassages().add(new Passage(Direction.NORTH, entree, false));
-
-        // Passage entre salle intermédiaire et sortie
-        salleInter.getPassages().add(new Passage(Direction.SOUTH, sortie, false));
-        sortie.getPassages().add(new Passage(Direction.NORTH, salleInter, false));
-
-    }
-
     private void generateRandomPassage(List<Room> rooms) {
-        int n = rooms.size();
-        if (n < 2) return;
+        int nbRooms = rooms.size();
+        if (nbRooms < 2) return;
 
-        List<Room> connectedRooms = new ArrayList<>();
-
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < nbRooms; i++) {
             Room current = rooms.get(i);
 
-            // Définir un nombre de connexions pour cette salle
-            int numConnections = RandomUtils.randomMax(4);
-            if (numConnections > n - 1) numConnections = n - 1;
+            // Vérifier si la salle actuelle a déjà le nombre maximum de connexions
+            int connectionsMade = current.getPassages().size();
 
-            int connectionsMade = 0;
-            while (connectionsMade < numConnections) {
-                int index = (int) (Math.random() * n);
+            // Limiter le nombre de connexions à 4 moins le nombre de connexions déjà existantes
+            int nbConnections = RandomUtils.randomMax(4) - connectionsMade;
+
+            // Limitation des essais pour éviter les boucles infinies
+            int attempts = 0;
+            int maxAttempts = 2*nbConnections;
+
+            while (nbConnections > connectionsMade && attempts < maxAttempts) {
+                attempts++;
+                int index = (int) (Math.random() * nbRooms);
                 Room target = rooms.get(index);
 
-                // Ne pas se relier lui-même et ne pas une connexion déjà existante
                 if (target != current && !areRoomsConnected(current, target)) {
-                    // Créer une connexion dans une direction non encore utilisée
+                    // Vérifier si la salle possède une direction libre
                     Direction dir = getAvailableDirection(current);
+
                     if (dir != null) {
-                        current.getPassages().add(new Passage(dir, target, false));
-                        // Ajouter la connexion dans l'autre direction
-                        Direction reverseDir = getOppositeDirection(dir);
-                        target.getPassages().add(new Passage(reverseDir, current, false));
-                        connectionsMade++;
+                        // Vérifier si la salle cible n'est pas déjà reliée dans la direction opposée à cette salle
+                        boolean alreadyLinked = current.getPassages().stream()
+                                .anyMatch(p -> p.getDirection() == getOppositeDirection(dir) && p.getRoom() == current);
+
+                        if (!alreadyLinked) {
+                            // Créer le passage entre les deux salles
+                            current.getPassages().add(new Passage(dir, target, false));
+                            // Créer le passage dans l'autre sens
+                            Direction reverse = getOppositeDirection(dir);
+                            target.getPassages().add(new Passage(reverse, current, false));
+                            connectionsMade++;
+                        }
                     }
                 }
             }
+            // Si maxAttempts atteint et pas assez de connexions, on passe à la salle suivante
         }
     }
 
@@ -111,7 +109,7 @@ public class DungeonServiceImpl implements DungeonService {
             directions.remove(p.getDirection());
         }
         if (directions.isEmpty()) return null;
-        return directions.get(RandomUtils.randomMax(directions.size()));
+        return directions.get(RandomUtils.randomMax(directions.size()-1));
     }
 
     private Direction getOppositeDirection(Direction dir) {

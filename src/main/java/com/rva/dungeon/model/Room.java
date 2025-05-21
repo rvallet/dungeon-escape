@@ -6,34 +6,34 @@ import java.util.List;
 
 public class Room {
 
-    private String nom;
-    private int numSalle;
+    private String name;
+    private int roomIndex;
     private String description;
 
     private List<Passage> passages;
     private List<Item> items;
     private List<Enemy> enemies;
 
-    public Room(String nom, int numSalle, String description) {
-        this.nom = nom;
-        this.numSalle = numSalle;
+    public Room(String name, int roomIndex, String description) {
+        this.name = name;
+        this.roomIndex = roomIndex;
         this.description = description;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public int getNumSalle() {
-        return numSalle;
+    public int getRoomIndex() {
+        return roomIndex;
     }
 
-    public void setNumSalle(int numSalle) {
-        this.numSalle = numSalle;
+    public void setRoomIndex(int roomIndex) {
+        this.roomIndex = roomIndex;
     }
 
     public String getDescription() {
