@@ -15,7 +15,11 @@ public class ConsoleUtils {
     // Scanner pour la saisie utilisateur
     private static Scanner scanner;
 
+    // Constantes de formatage
     public static final String RETOUR = "\n";
+    public static final String SPACE = " ";
+    public static final String DOT = ".";
+
     // Code de réinitialisation
     public static final String RESET = "\u001b[0m";
 

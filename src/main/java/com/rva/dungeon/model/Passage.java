@@ -38,4 +38,13 @@ public class Passage {
         this.isLocked = isLocked;
     }
 
+    @Override
+    public String toString() {
+        return "Passage{" +
+                "direction=" + direction +
+                ", room=" + room.getName() +
+                ", isLocked=" + isLocked +
+                '}';
+    }
+
 }

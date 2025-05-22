@@ -59,50 +59,50 @@ public class DungeonServiceImpl implements DungeonService {
             // Vérifier si la salle actuelle a déjà le nombre maximum de connexions
             int connectionsMade = current.getPassages().size();
 
-            // Limiter le nombre de connexions à 4 moins le nombre de connexions déjà existantes
-            int nbConnections = RandomUtils.randomMax(4) - connectionsMade;
+            // Limiter le nombre de connexions à 4.
+            int nbConnections = RandomUtils.randomMax(4);
 
             // Limitation des essais pour éviter les boucles infinies
             int attempts = 0;
-            int maxAttempts = 2*nbConnections;
+            int maxAttempts = 2 * nbConnections;
 
             while (nbConnections > connectionsMade && attempts < maxAttempts) {
                 attempts++;
-                int index = (int) (Math.random() * nbRooms);
-                Room target = rooms.get(index);
 
-                if (target != current && !areRoomsConnected(current, target)) {
-                    // Vérifier si la salle possède une direction libre
-                    Direction dir = getAvailableDirection(current);
+                // Choisir une salle cible aléatoire en excluant la salle actuelle
+                List<Room> candidates = new ArrayList<>(rooms);
+                candidates.remove(current);
+                if (candidates.isEmpty()) break;
 
-                    if (dir != null) {
-                        // Vérifier si la salle cible n'est pas déjà reliée dans la direction opposée à cette salle
-                        boolean alreadyLinked = current.getPassages().stream()
-                                .anyMatch(p -> p.getDirection() == getOppositeDirection(dir) && p.getRoom() == current);
+                int index = (int) (Math.random() * candidates.size());
+                Room target = candidates.get(index);
 
-                        if (!alreadyLinked) {
+                // Obtenir une direction aléatoire qui est libre selon les passages existants
+                Direction availableRandomDirection = getAvailableRandomDirection(current);
+
+               if (availableRandomDirection != null && !current.isConnectedTo(target)) {
+                   // Vérifier si la salle cible n'est pas déjà reliée dans la direction opposée à une autre salle
+                   boolean alreadyLinkedTarget = target.hasPassageInDirection(Direction.getOpposite(availableRandomDirection));
+
+                        if (!alreadyLinkedTarget) {
                             // Créer le passage entre les deux salles
-                            current.getPassages().add(new Passage(dir, target, false));
+                            current.getPassages().add(new Passage(availableRandomDirection, target, false));
                             // Créer le passage dans l'autre sens
-                            Direction reverse = getOppositeDirection(dir);
+                            Direction reverse = Direction.getOpposite(availableRandomDirection);
                             target.getPassages().add(new Passage(reverse, current, false));
+
+                            //TODO : remove this logs
+                            // System.out.println(current.getPassages().toString());
+                            // System.out.println(target.getPassages().toString());
                             connectionsMade++;
                         }
-                    }
                 }
             }
             // Si maxAttempts atteint et pas assez de connexions, on passe à la salle suivante
         }
     }
 
-    private boolean areRoomsConnected(Room a, Room b) {
-        for (Passage p : a.getPassages()) {
-            if (p.getRoom() == b) return true;
-        }
-        return false;
-    }
-
-    private Direction getAvailableDirection(Room room) {
+    private Direction getAvailableRandomDirection(Room room) {
         // Retourne une direction libre dans ce room, sinon null
         List<Direction> directions = new ArrayList<>(Direction.getDirections());
         for (Passage p : room.getPassages()) {
@@ -110,15 +110,6 @@ public class DungeonServiceImpl implements DungeonService {
         }
         if (directions.isEmpty()) return null;
         return directions.get(RandomUtils.randomMax(directions.size()-1));
-    }
-
-    private Direction getOppositeDirection(Direction dir) {
-        return switch (dir) {
-            case NORTH -> Direction.SOUTH;
-            case SOUTH -> Direction.NORTH;
-            case EAST -> Direction.WEST;
-            case WEST -> Direction.EAST;
-        };
     }
 
     private void generateEnemies(List<Room> rooms) {

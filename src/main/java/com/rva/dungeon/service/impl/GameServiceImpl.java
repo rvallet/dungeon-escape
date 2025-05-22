@@ -2,7 +2,9 @@ package com.rva.dungeon.service.impl;
 
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
+import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.model.Dungeon;
+import com.rva.dungeon.model.Room;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.GameService;
 import com.rva.dungeon.utils.console.ConsoleUtils;
@@ -35,6 +37,7 @@ public class GameServiceImpl implements GameService {
         demanderNomJoueur();
         accueillirJoueur();
         dungeon = dungeonService.generate(5, contentService);
+        player.setCurrentRoom(dungeon.getRooms().getFirst());
         afficherActionsDisponibles();
         lancerBoucleDuJeux();
     }
@@ -116,6 +119,46 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    private void choisirDirection() {
+        // TODO : Choisir une direction - Optimiser code et affichage des directions
+        String directions = Room.displayFormatedAvailableDirections(
+                player.getCurrentRoom(),
+                contentService
+        );
+        ConsoleUtils.afficher(
+                ConsoleUtils.YELLOW +
+                        contentService.getString(ContentKey.COMMON_DISPLAY_DIRECTION) +
+                        ConsoleUtils.RETOUR +
+                        directions +
+                        ConsoleUtils.RESET
+        );
+        String input = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_QUERY_DIRECTION));
+        Direction direction = Direction.fromInput(input, contentService);
+
+        Room currentRoom = player.getCurrentRoom();
+        Room nextRoom = Room.moveToRoomInDirection(currentRoom, direction);
+        if (nextRoom != null) {
+            player.setCurrentRoom(nextRoom);
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            contentService.getString(ContentKey.COMMON_ROOM_MOVE_OUT).toLowerCase() +
+                            ConsoleUtils.SPACE +
+                            currentRoom.getName() + ConsoleUtils.DOT +
+                            ConsoleUtils.RETOUR +
+                            contentService.getString(ContentKey.COMMON_ROOM_MOVE_INTO).toLowerCase() +
+                            ConsoleUtils.SPACE +
+                            nextRoom.getName() + ConsoleUtils.DOT +
+                            ConsoleUtils.RESET
+            );
+        } else {
+            ConsoleUtils.afficher(
+                    ConsoleUtils.RED +
+                            contentService.getString(ContentKey.COMMON_ROOM_ERROR) +
+                            ConsoleUtils.RESET
+            );
+        }
+    }
+
     /**
      * Boucle principale du jeu
      */
@@ -136,6 +179,9 @@ public class GameServiceImpl implements GameService {
                     break;
                 case CHARACTER:
                     afficherInformationJoueur();
+                    break;
+                case DIRECTION:
+                    choisirDirection();
                     break;
                 case null:
                 default:

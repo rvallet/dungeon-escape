@@ -5,17 +5,20 @@ import com.rva.dungeon.utils.content.ContentKey;
 
 public enum Action {
 
-    QUIT(1, ContentKey.ACTION_CODE_1),
-    EXPLORE(2, ContentKey.ACTION_CODE_2),
-    HELP(3, ContentKey.ACTION_CODE_3),
-    CHARACTER(4, ContentKey.ACTION_CODE_4);
+    QUIT(1, ContentKey.ACTION_CODE_1, ContentKey.ACTION_CODE_1_DESCRIPTION),
+    EXPLORE(2, ContentKey.ACTION_CODE_2, ContentKey.ACTION_CODE_2_DESCRIPTION),
+    HELP(3, ContentKey.ACTION_CODE_3, ContentKey.ACTION_CODE_3_DESCRIPTION),
+    CHARACTER(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
+    DIRECTION(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION);
 
     private final int number;
     private final ContentKey code;
+    private final ContentKey description;
 
-    Action(int number, ContentKey code) {
+    Action(int number, ContentKey code, ContentKey description) {
         this.number = number;
         this.code = code;
+        this.description = description;
     }
 
     public int getNumber() {
@@ -24,6 +27,10 @@ public enum Action {
 
     public ContentKey getCode() {
         return code;
+    }
+
+    public ContentKey getDescription() {
+        return description;
     }
 
     public static Action fromInput(String input, ContentService contentService) {
@@ -56,8 +63,11 @@ public enum Action {
         for (Action action : Action.values()) {
             actionList
                     .append(action.getNumber())
-                    .append(" - ")
+                    .append(" - '")
                     .append(contentService.getString(action.getCode()))
+                    .append("' (")
+                    .append(contentService.getString(action.getDescription()))
+                    .append(")")
                     .append("\n");
         }
         actionList.deleteCharAt(actionList.length() - 1);

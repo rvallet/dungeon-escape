@@ -1,5 +1,7 @@
 package com.rva.dungeon.entity;
 
+import com.rva.dungeon.model.Room;
+
 public abstract class Character {
 
     private String name;
@@ -10,6 +12,7 @@ public abstract class Character {
     private int experiencePoints = 0;
     private int gold = 0;
     private boolean isAlive = true;
+    private Room currentRoom;
 
     public Character() {
         // Default constructor
@@ -88,5 +91,12 @@ public abstract class Character {
         this.isAlive = isAlive;
     }
 
+    public Room getCurrentRoom() {
+        return currentRoom;
+    }
+
+    public void setCurrentRoom(Room currentRoom) {
+        this.currentRoom = currentRoom;
+    }
 
 }
