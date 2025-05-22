@@ -1,8 +1,11 @@
 package com.rva.dungeon.model;
 
 import com.rva.dungeon.entity.Enemy;
+import com.rva.dungeon.enumerated.Direction;
+import com.rva.dungeon.service.ContentService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Room {
 
@@ -67,4 +70,47 @@ public class Room {
     public void setEnemies(List<Enemy> enemies) {
         this.enemies = enemies;
     }
+
+    /**
+     * Détermine si la salle possède un passage dans une direction donnée.
+     * Cette méthode est utilisée pour vérifier si la salle actuelle peut être atteinte.
+     * @param dir - Direction
+     * @return - true si un passage existe dans la direction donnée, false sinon
+     */
+    public boolean hasPassageInDirection (Direction dir) {
+        return this.getPassages().stream().anyMatch(passage -> passage.getDirection() == dir);
+    }
+
+    /**
+     * Vérifie si la salle est connectée à une autre salle.
+     * Cette méthode est utilisée pour déterminer si la salle actuelle peut être atteinte quelle que soit la direction.
+     * @param other - Salle cible
+     * @return true si connectée, false sinon
+     */
+    public boolean isConnectedTo(Room other) {
+        return this.getPassages().stream().anyMatch(p -> p.getRoom() == other);
+    }
+
+    public static Room moveToRoomInDirection(Room currentRoom, Direction direction) {
+        for (Passage passage : currentRoom.getPassages()) {
+            if (passage.getDirection() == direction) {
+                return passage.getRoom();
+            }
+        }
+        return null;
+    }
+
+    public static String displayFormatedAvailableDirections(Room room, ContentService contentService) {
+        StringBuilder passageList = new StringBuilder();
+        for (Passage passage : room.getPassages()) {
+            passageList
+                    .append(passage.getDirection().getNumber())
+                    .append(" - ")
+                    .append(passage.getDirection().getContent(contentService))
+                    .append("\n");
+        }
+        passageList.deleteCharAt(passageList.length() - 1);
+        return passageList.toString();
+    }
+
 }
