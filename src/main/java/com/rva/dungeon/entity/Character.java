@@ -17,6 +17,7 @@ public abstract class Character {
     public Character() {
         // Default constructor
     }
+
     public Character(String name) {
         this.name = name;
     }

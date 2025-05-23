@@ -5,13 +5,14 @@ import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.service.ContentService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Room {
 
     private String name;
     private int roomIndex;
     private String description;
+    private boolean isVisited;
+    private boolean isExit;
 
     private List<Passage> passages;
     private List<Item> items;
@@ -69,6 +70,22 @@ public class Room {
 
     public void setEnemies(List<Enemy> enemies) {
         this.enemies = enemies;
+    }
+
+    public boolean isVisited() {
+        return isVisited;
+    }
+
+    public void setIsVisited(boolean isVisited) {
+        this.isVisited = isVisited;
+    }
+
+    public boolean isExit() {
+        return isExit;
+    }
+
+    public void setIsExit(boolean isExit) {
+        this.isExit = isExit;
     }
 
     /**

@@ -8,6 +8,7 @@ public class Enemy extends Character {
     public final EnemyType enemyType;
 
     public Enemy(EnemyType enemyType, ContentService contentService) {
+        super();
         this.enemyType = enemyType;
         setName(enemyType.getTypeName(contentService));
         setHealth(enemyType.getHealth());

@@ -19,6 +19,9 @@ public class DungeonServiceImpl implements DungeonService {
         // Création des salles
         List<Room> rooms = generateRooms(numberOfRooms, contentService);
 
+        // Génération d'une sortie
+        generateExit(rooms, contentService);
+
         // Génération des enemies
         // TODO : Génération des ennemis
         generateEnemies(rooms);
@@ -36,12 +39,23 @@ public class DungeonServiceImpl implements DungeonService {
 
     private List<Room> generateRooms(int numberOfRooms, ContentService contentService) {
         List<Room> rooms = new ArrayList<>();
+        List<ContentKey> roomDescriptions = ContentKey.getRoomDescriptions();
 
         for (int i = 0; i < numberOfRooms; i++) {
+            // Obtention d'une description aléatoire
+            int randomIndex = RandomUtils.randomMax(roomDescriptions.size() - 1);
+            ContentKey randomDescriptionKey = roomDescriptions.get(randomIndex);
+            // Suppression de la description pour éviter les doublons
+            roomDescriptions.remove(randomIndex);
+            // Si la liste est vide, on la réinitialise
+            if (roomDescriptions.isEmpty()) {
+                roomDescriptions = ContentKey.getRoomDescriptions();
+            }
+
             Room room = new Room(
                     contentService.getString(ContentKey.ROOM_NAME) + (i + 1),
                     i + 1,
-                    contentService.getString(ContentKey.ROOM_DESCRIPTION)
+                    contentService.getString(randomDescriptionKey)
             );
             room.setPassages(new ArrayList<>());
             rooms.add(room);
@@ -102,6 +116,11 @@ public class DungeonServiceImpl implements DungeonService {
         }
     }
 
+    /**
+     * Retourne une direction libre dans la salle donnée.
+     * @param room - Salle actuelle
+     * @return - Direction libre ou null si aucune direction n'est disponible
+     */
     private Direction getAvailableRandomDirection(Room room) {
         // Retourne une direction libre dans ce room, sinon null
         List<Direction> directions = new ArrayList<>(Direction.getDirections());
@@ -110,6 +129,42 @@ public class DungeonServiceImpl implements DungeonService {
         }
         if (directions.isEmpty()) return null;
         return directions.get(RandomUtils.randomMax(directions.size()-1));
+    }
+
+    /**
+     * Génère une sortie dans le donjon.
+     * La sortie est placée dans une salle aléatoire parmi les 75% des dernières salles de la liste.
+     * La sortie est définie comme une salle avec le moins de connexions possibles.
+     * Il faut donc arriver à une salle dont le numéro est supérieur à 25% du nombre total de salles pour pouvoir sortir.
+     * @param rooms - Liste des salles du donjon
+     * @param contentService - Service de contenu pour obtenir les descriptions
+     */
+    private void generateExit(List<Room> rooms, ContentService contentService) {
+
+        // Exclure 25% des salles (on ne peut pas sortir des salles de départ)
+        int limite = rooms.size() / 4;
+        List<Room> candidates = new ArrayList<>();
+        for (int i = limite; i < rooms.size(); i++) {
+            candidates.add(rooms.get(i));
+        }
+
+        // Choisir les salles restantes ayant le moins de connexions
+        int minConnections = candidates.stream()
+                .mapToInt(r -> r.getPassages().size())
+                .min()
+                .orElse(Integer.MAX_VALUE);
+
+        List<Room> leastConnectedRooms = candidates.stream()
+                .filter(r -> r.getPassages().size() == minConnections)
+                .toList();
+
+        // Choisir une salle au hasard parmi les candidates restantes
+        Room exitRoom = leastConnectedRooms.get(RandomUtils.randomMax(candidates.size() - 1));
+
+        // Créer la sortie
+        exitRoom.setDescription(contentService.getString(ContentKey.COMMON_ROOM_DESCRIPTION_EXIT));
+        exitRoom.setIsExit(true);
+
     }
 
     private void generateEnemies(List<Room> rooms) {

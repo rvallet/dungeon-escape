@@ -1,9 +1,14 @@
 package com.rva.dungeon.utils.content;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public enum ContentKey {
 
     INIT_SELECT_LANGUAGE("init.select.language"),
     INIT_SELECT_LANGUAGE_PROMPT("init.select.language.prompt"),
+    INIT_SELECT_DIFFICULTY("init.select.difficulty"),
+    INIT_SELECT_DIFFICULTY_PROMPT("init.select.difficulty.prompt"),
 
     ACTION_CODE_1("action.code.1"),
     ACTION_CODE_1_DESCRIPTION("action.code.1.description"),
@@ -25,11 +30,16 @@ public enum ContentKey {
     PLAYER_HEALTH("player.health"),
     PLAYER_DEFENSE("player.defense"),
     PLAYER_ATTACK("player.attack"),
+    PLAYER_GOLD("player.gold"),
 
     ENEMY_TYPE_1("enemy.type.1"),
     ENEMY_TYPE_2("enemy.type.2"),
     ENEMY_TYPE_3("enemy.type.3"),
     ENEMY_TYPE_4("enemy.type.4"),
+
+    POTION_TYPE_1("potion.type.1"),
+    POTION_TYPE_2("potion.type.2"),
+    POTION_TYPE_3("potion.type.3"),
 
     ROOM_NAME("room.name"),
     ROOM_DESCRIPTION("room.description"),
@@ -43,7 +53,30 @@ public enum ContentKey {
 
     COMMON_ROOM_MOVE_INTO("common.room.move.into"),
     COMMON_ROOM_MOVE_OUT("common.room.move.out"),
+    COMMON_ROOM_VISITED("common.room.visited"),
     COMMON_ROOM_ERROR("common.room.move.error"),
+
+    COMMON_ROOM_DESCRIPTION_1("common.room.description.1"),
+    COMMON_ROOM_DESCRIPTION_2("common.room.description.2"),
+    COMMON_ROOM_DESCRIPTION_3("common.room.description.3"),
+    COMMON_ROOM_DESCRIPTION_4("common.room.description.4"),
+    COMMON_ROOM_DESCRIPTION_5("common.room.description.5"),
+    COMMON_ROOM_DESCRIPTION_6("common.room.description.6"),
+    COMMON_ROOM_DESCRIPTION_7("common.room.description.7"),
+    COMMON_ROOM_DESCRIPTION_8("common.room.description.8"),
+    COMMON_ROOM_DESCRIPTION_9("common.room.description.9"),
+    COMMON_ROOM_DESCRIPTION_10("common.room.description.10"),
+    COMMON_ROOM_DESCRIPTION_11("common.room.description.11"),
+    COMMON_ROOM_DESCRIPTION_12("common.room.description.12"),
+    COMMON_ROOM_DESCRIPTION_13("common.room.description.13"),
+    COMMON_ROOM_DESCRIPTION_14("common.room.description.14"),
+    COMMON_ROOM_DESCRIPTION_15("common.room.description.15"),
+    COMMON_ROOM_DESCRIPTION_16("common.room.description.16"),
+    COMMON_ROOM_DESCRIPTION_17("common.room.description.17"),
+    COMMON_ROOM_DESCRIPTION_18("common.room.description.18"),
+    COMMON_ROOM_DESCRIPTION_19("common.room.description.19"),
+    COMMON_ROOM_DESCRIPTION_20("common.room.description.20"),
+    COMMON_ROOM_DESCRIPTION_EXIT("common.room.description.exit"),
 
     COMMON_COMMAND_ACTIONS("common.command.actions"),
     COMMON_COMMAND_UNKNOWN("common.command.unknown"),
@@ -74,6 +107,16 @@ public enum ContentKey {
     @Override
     public String toString() {
         return key;
+    }
+
+    public static List<ContentKey> getRoomDescriptions() {
+        List<ContentKey> roomDescriptions = new ArrayList<>();
+        for (ContentKey contentKey : ContentKey.values()) {
+            if (contentKey.name().startsWith("COMMON_ROOM_DESCRIPTION_")) {
+                roomDescriptions.add(contentKey);
+            }
+        }
+        return roomDescriptions;
     }
 
 }
