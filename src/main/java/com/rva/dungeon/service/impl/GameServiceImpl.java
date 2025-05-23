@@ -9,6 +9,7 @@ import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.GameService;
 import com.rva.dungeon.utils.console.ConsoleUtils;
 import com.rva.dungeon.utils.content.ContentKey;
+import com.rva.dungeon.utils.random.RandomUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -33,11 +34,12 @@ public class GameServiceImpl implements GameService {
     @Override
     public void startGame() {
         choixLangue();
+        choixDifficulte();
         afficherIntroduction();
         demanderNomJoueur();
+        // dungeon = dungeonService.generate(5, contentService);
+        placerJoueurDansSalleDepart();
         accueillirJoueur();
-        dungeon = dungeonService.generate(5, contentService);
-        player.setCurrentRoom(dungeon.getRooms().getFirst());
         afficherActionsDisponibles();
         lancerBoucleDuJeux();
     }
@@ -55,6 +57,22 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    private void choixDifficulte() {
+        ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY));
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_BLUE, contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY_PROMPT));
+        switch (choix){
+            case "2":
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
+                break;
+            case "3":
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
+                break;
+            case "1":
+            default:
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(10, 20), contentService);
+        }
+    }
+
     private void afficherIntroduction(){
         ConsoleUtils.afficher(ConsoleUtils.BRIGHT_BLUE + contentService.getString(ContentKey.DUNGEON_INTRO) + ConsoleUtils.RESET);
     }
@@ -64,9 +82,16 @@ public class GameServiceImpl implements GameService {
         player = new Player(playerName);
     }
 
+    private void placerJoueurDansSalleDepart() {
+        Room firstRoom = dungeon.getRooms().getFirst();
+        firstRoom.setIsVisited(true);
+        player.setCurrentRoom(firstRoom);
+    }
+
 
     private void accueillirJoueur() {
         ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING), player.getName());
+        ConsoleUtils.afficherCouleur(false, ConsoleUtils.YELLOW, player.getCurrentRoom().getDescription());
     }
 
     private void afficherActionsDisponibles() {
@@ -143,13 +168,26 @@ public class GameServiceImpl implements GameService {
                     ConsoleUtils.YELLOW +
                             contentService.getString(ContentKey.COMMON_ROOM_MOVE_OUT).toLowerCase() +
                             ConsoleUtils.SPACE +
-                            currentRoom.getName() + ConsoleUtils.DOT +
-                            ConsoleUtils.RETOUR +
+                            currentRoom.getName() + ConsoleUtils.SPACE +
                             contentService.getString(ContentKey.COMMON_ROOM_MOVE_INTO).toLowerCase() +
                             ConsoleUtils.SPACE +
-                            nextRoom.getName() + ConsoleUtils.DOT +
+                            nextRoom.getName() + ConsoleUtils.DOT + ConsoleUtils.RETOUR +
+                            nextRoom.getDescription() +
                             ConsoleUtils.RESET
             );
+            if (nextRoom.isVisited()) {
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                contentService.getString(ContentKey.COMMON_ROOM_VISITED) +
+                                ConsoleUtils.RESET
+                );
+            } else {
+                nextRoom.setIsVisited(true);
+            }
+            if (nextRoom.isExit()) {
+                // TODO : Afficher message de victoire
+                gameStarted = false;
+            }
         } else {
             ConsoleUtils.afficher(
                     ConsoleUtils.RED +
