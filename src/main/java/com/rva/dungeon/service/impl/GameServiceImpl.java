@@ -37,7 +37,6 @@ public class GameServiceImpl implements GameService {
         choixDifficulte();
         afficherIntroduction();
         demanderNomJoueur();
-        // dungeon = dungeonService.generate(5, contentService);
         placerJoueurDansSalleDepart();
         accueillirJoueur();
         afficherActionsDisponibles();
@@ -90,7 +89,7 @@ public class GameServiceImpl implements GameService {
 
 
     private void accueillirJoueur() {
-        ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING), player.getName());
+        ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING) + ConsoleUtils.RETOUR, player.getName());
         ConsoleUtils.afficherCouleur(false, ConsoleUtils.YELLOW, player.getCurrentRoom().getDescription());
     }
 
