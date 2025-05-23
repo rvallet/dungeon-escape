@@ -55,6 +55,10 @@ public enum ContentKey {
     COMMON_ROOM_MOVE_OUT("common.room.move.out"),
     COMMON_ROOM_VISITED("common.room.visited"),
     COMMON_ROOM_ERROR("common.room.move.error"),
+    COMMON_ROOM_ENEMIES_ALIVE("common.room.enemies.alive"),
+    COMMON_ROOM_ENEMIES_DEAD("common.room.enemies.dead"),
+    COMMON_ROOM_ENEMIES_ALIVE_LABEL("common.room.enemies.alive.label"),
+    COMMON_ROOM_ENEMIES_DEAD_LABEL("common.room.enemies.dead.label"),
 
     COMMON_ROOM_DESCRIPTION_1("common.room.description.1"),
     COMMON_ROOM_DESCRIPTION_2("common.room.description.2"),

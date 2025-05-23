@@ -1,9 +1,11 @@
 package com.rva.dungeon.service.impl;
 
+import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
 import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.model.Dungeon;
+import com.rva.dungeon.model.Item;
 import com.rva.dungeon.model.Room;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.GameService;
@@ -11,7 +13,9 @@ import com.rva.dungeon.utils.console.ConsoleUtils;
 import com.rva.dungeon.utils.content.ContentKey;
 import com.rva.dungeon.utils.random.RandomUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -43,9 +47,14 @@ public class GameServiceImpl implements GameService {
         lancerBoucleDuJeux();
     }
 
+    /**
+     * Choisit la langue du jeu :
+     * 1 : Français
+     * 2 : Anglais
+     */
     private void choixLangue(){
         ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_LANGUAGE));
-        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_BLUE, contentService.getString(ContentKey.INIT_SELECT_LANGUAGE_PROMPT));
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.INIT_SELECT_LANGUAGE_PROMPT));
         switch (choix){
             case "2":
                 contentService.setLocale(Locale.forLanguageTag("en-US"));
@@ -56,9 +65,15 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    /**
+     * Choisit la difficulté du jeu :
+     * 1 : Facile (10-20 salles)
+     * 2 : Moyen (21-50 salles)
+     * 3 : Difficile (51-100 salles)
+     */
     private void choixDifficulte() {
         ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY));
-        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_BLUE, contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY_PROMPT));
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_MAGENTA, contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY_PROMPT));
         switch (choix){
             case "2":
                 dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
@@ -72,27 +87,41 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    /**
+     * Affiche l'introduction du jeu
+     */
     private void afficherIntroduction(){
-        ConsoleUtils.afficher(ConsoleUtils.BRIGHT_BLUE + contentService.getString(ContentKey.DUNGEON_INTRO) + ConsoleUtils.RESET);
+        ConsoleUtils.afficher(ConsoleUtils.BRIGHT_YELLOW + contentService.getString(ContentKey.DUNGEON_INTRO) + ConsoleUtils.RESET);
     }
 
+    /**
+     * Demande le nom du joueur
+     */
     private void demanderNomJoueur() {
-        String playerName = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_QUERY_PLAYER_NAME));
+        String playerName = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_QUERY_PLAYER_NAME));
         player = new Player(playerName);
     }
 
+    /**
+     * Place le joueur dans la salle de départ
+     */
     private void placerJoueurDansSalleDepart() {
         Room firstRoom = dungeon.getRooms().getFirst();
         firstRoom.setIsVisited(true);
         player.setCurrentRoom(firstRoom);
     }
 
-
+    /**
+     * Accueille le joueur dans le jeu
+     */
     private void accueillirJoueur() {
         ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GREETING) + ConsoleUtils.RETOUR, player.getName());
         ConsoleUtils.afficherCouleur(false, ConsoleUtils.YELLOW, player.getCurrentRoom().getDescription());
     }
 
+    /**
+     * Affiche la liste des actions disponibles
+     */
     private void afficherActionsDisponibles() {
         ConsoleUtils.afficher(
                 ConsoleUtils.YELLOW +
@@ -107,6 +136,9 @@ public class GameServiceImpl implements GameService {
         );
     }
 
+    /**
+     * Affiche les informations du joueur
+     */
     private void afficherInformationJoueur() {
         ConsoleUtils.afficher(
                 ConsoleUtils.YELLOW +
@@ -115,17 +147,54 @@ public class GameServiceImpl implements GameService {
         );
     }
 
-    private void explorerDonjon() {
+    /**
+     * Affiche le détail de la salle actuelle
+     */
+    private void explorerSalle() {
+        // TODO : Afficher les enemis de la salle actuelle et les objets
+        List<Enemy> enemies = player.getCurrentRoom().getEnemies();
+        List<Item> items = player.getCurrentRoom().getItems();
 
-/*        ConsoleUtils.afficher(
+        ConsoleUtils.afficher(
                 ConsoleUtils.YELLOW +
-                     dungeon.getRooms().get(0).getName() + ConsoleUtils.RETOUR +
-                     dungeon.getRooms().get(0).getDescription() + ConsoleUtils.RETOUR +
-                     dungeon.getRooms().get(0).getPassages().getFirst().getDirection().getContent(contentService) +
-                     ConsoleUtils.RESET
-        );*/
+                        player.getCurrentRoom().getDescription() +
+                        ConsoleUtils.RETOUR +
+                        ConsoleUtils.RESET
+        );
 
-        // TODO : Afficher les salles du donjon (DEBUG Dungeon)
+        if (player.getCurrentRoom().isVisited()) {
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            contentService.getString(ContentKey.COMMON_ROOM_VISITED) +
+                            ConsoleUtils.RESET
+            );
+        }
+
+        if (!CollectionUtils.isEmpty(enemies)) {
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            contentService.getString(player.getCurrentRoom().hasAnyEnemyAlive() ?
+                                    ContentKey.COMMON_ROOM_ENEMIES_ALIVE : ContentKey.COMMON_ROOM_ENEMIES_DEAD) +
+                            ConsoleUtils.RESET
+            );
+            enemies.forEach(enemy -> {
+                String enemyStatus = enemy.getIsAlive() ?
+                        contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_ALIVE_LABEL) : contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_DEAD_LABEL);
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                enemies.indexOf(enemy)+1 + " - " +
+                                enemy.getName() + ConsoleUtils.SPACE + "(" + enemyStatus + ")" + ConsoleUtils.RETOUR +
+                                ConsoleUtils.RESET
+                );
+            });
+        }
+    }
+
+    /**
+     * Affiche les salles du donjon et les passages
+     */
+    private void explorerDonjon() {
+       // TODO : Afficher les salles du donjon (DEBUG Dungeon)
         dungeon.getRooms().forEach(room -> {
             // Crée une liste de descriptions pour chaque passage
             String passagesListe = room.getPassages().stream()
@@ -143,6 +212,9 @@ public class GameServiceImpl implements GameService {
 
     }
 
+    /**
+     * Choisit une direction pour se déplacer dans le donjon
+     */
     private void choisirDirection() {
         // TODO : Choisir une direction - Optimiser code et affichage des directions
         String directions = Room.displayFormatedAvailableDirections(
@@ -156,7 +228,7 @@ public class GameServiceImpl implements GameService {
                         directions +
                         ConsoleUtils.RESET
         );
-        String input = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_QUERY_DIRECTION));
+        String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_QUERY_DIRECTION));
         Direction direction = Direction.fromInput(input, contentService);
 
         Room currentRoom = player.getCurrentRoom();
@@ -202,14 +274,15 @@ public class GameServiceImpl implements GameService {
     private void lancerBoucleDuJeux(){
         while (gameStarted) {
 
-            String input = ConsoleUtils.demanderCouleur(ConsoleUtils.BLUE, contentService.getString(ContentKey.COMMON_PROMPT));
+            String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_PROMPT));
             Action action = Action.fromInput(input, contentService);
             switch (action) {
                 case QUIT:
                     quitterJeu();
                     break;
                 case EXPLORE:
-                    explorerDonjon();
+                    explorerSalle();
+                    //TODEBUG : explorerDonjon();
                     break;
                 case HELP:
                     afficherActionsDisponibles();
@@ -229,6 +302,9 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    /**
+     * Quitte le jeu
+     */
     private void quitterJeu() {
         gameStarted = false;
         ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GOODBYE), player.getName());
