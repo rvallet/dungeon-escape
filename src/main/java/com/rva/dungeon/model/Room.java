@@ -3,6 +3,7 @@ package com.rva.dungeon.model;
 import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.service.ContentService;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -108,6 +109,12 @@ public class Room {
         return this.getPassages().stream().anyMatch(p -> p.getRoom() == other);
     }
 
+    /**
+     * Déplace le joueur vers la salle dans la direction spécifiée.
+     * @param currentRoom - Salle actuelle
+     * @param direction - Direction vers laquelle se déplacer
+     * @return - Salle cible ou null si aucun passage n'existe dans cette direction
+     */
     public static Room moveToRoomInDirection(Room currentRoom, Direction direction) {
         for (Passage passage : currentRoom.getPassages()) {
             if (passage.getDirection() == direction) {
@@ -117,6 +124,12 @@ public class Room {
         return null;
     }
 
+    /**
+     * Affiche les directions disponibles dans la salle actuelle.
+     * @param room - Salle actuelle
+     * @param contentService - Service de contenu pour obtenir les descriptions
+     * @return - Liste des directions disponibles
+     */
     public static String displayFormatedAvailableDirections(Room room, ContentService contentService) {
         StringBuilder passageList = new StringBuilder();
         for (Passage passage : room.getPassages()) {
@@ -130,4 +143,15 @@ public class Room {
         return passageList.toString();
     }
 
+    /**
+     * Vérifie si la salle as au moins un ennemi vivant.
+     * @return true si au moins un ennemi est vivant, false sinon
+     */
+    public boolean hasAnyEnemyAlive(){
+        return
+                !CollectionUtils.isEmpty(enemies)
+                && this.enemies.stream().anyMatch(Enemy::getIsAlive);
+    }
+
 }
+

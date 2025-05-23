@@ -5,11 +5,11 @@ import com.rva.dungeon.utils.content.ContentKey;
 
 public enum Action {
 
-    QUIT(1, ContentKey.ACTION_CODE_1, ContentKey.ACTION_CODE_1_DESCRIPTION),
-    EXPLORE(2, ContentKey.ACTION_CODE_2, ContentKey.ACTION_CODE_2_DESCRIPTION),
-    HELP(3, ContentKey.ACTION_CODE_3, ContentKey.ACTION_CODE_3_DESCRIPTION),
-    CHARACTER(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
-    DIRECTION(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION);
+    EXPLORE(1, ContentKey.ACTION_CODE_1, ContentKey.ACTION_CODE_1_DESCRIPTION),
+    DIRECTION(2, ContentKey.ACTION_CODE_2, ContentKey.ACTION_CODE_2_DESCRIPTION),
+    CHARACTER(3, ContentKey.ACTION_CODE_3, ContentKey.ACTION_CODE_3_DESCRIPTION),
+    HELP(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
+    QUIT(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION);
 
     private final int number;
     private final ContentKey code;

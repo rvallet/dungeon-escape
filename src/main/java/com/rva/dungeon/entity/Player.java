@@ -45,7 +45,7 @@ public class Player extends Character {
                 .append(contentService.getString(ContentKey.PLAYER_HEALTH)).append(": ").append(getHealth()).append("\n")
                 .append(contentService.getString(ContentKey.PLAYER_ATTACK)).append(": ").append(getDefensePower()).append("\n")
                 .append(contentService.getString(ContentKey.PLAYER_DEFENSE)).append(": ").append(getAttackPower()).append("\n")
-                .append(contentService.getString(ContentKey.PLAYER_GOLD)).append(": ").append(getClassName())
+                .append(contentService.getString(ContentKey.PLAYER_GOLD)).append(": ").append(getGold())
                 .toString();
 
     }
