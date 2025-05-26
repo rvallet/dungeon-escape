@@ -25,7 +25,7 @@ public class GameServiceImpl implements GameService {
     private final ContentService contentService;
     private final DungeonServiceImpl dungeonService;
 
-    private boolean gameStarted = true;
+    private boolean gameStarted;
     private Dungeon dungeon;
     public static Player player;
 
@@ -37,6 +37,7 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void startGame() {
+        this.gameStarted = true;
         choixLangue();
         choixDifficulte();
         afficherIntroduction();
@@ -85,6 +86,8 @@ public class GameServiceImpl implements GameService {
             default:
                 dungeon = dungeonService.generate(RandomUtils.randomBetween(10, 20), contentService);
         }
+        // Calcul des positions des salles dans le donjon
+        dungeon.dungeonRoomPositionCompute();
     }
 
     /**
@@ -152,8 +155,8 @@ public class GameServiceImpl implements GameService {
      */
     private void explorerSalle() {
         // TODO : Afficher les enemis de la salle actuelle et les objets
-        List<Enemy> enemies = player.getCurrentRoom().getEnemies();
-        List<Item> items = player.getCurrentRoom().getItems();
+        List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
+        List<Item> itemsInCurrentRoom = player.getCurrentRoom().getItems();
 
         ConsoleUtils.afficher(
                 ConsoleUtils.YELLOW +
@@ -170,28 +173,56 @@ public class GameServiceImpl implements GameService {
             );
         }
 
-        if (!CollectionUtils.isEmpty(enemies)) {
+        if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
                             contentService.getString(player.getCurrentRoom().hasAnyEnemyAlive() ?
                                     ContentKey.COMMON_ROOM_ENEMIES_ALIVE : ContentKey.COMMON_ROOM_ENEMIES_DEAD) +
                             ConsoleUtils.RESET
             );
-            enemies.forEach(enemy -> {
+            enemiesInCurrentRoom.forEach(enemy -> {
                 String enemyStatus = enemy.getIsAlive() ?
                         contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_ALIVE_LABEL) : contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_DEAD_LABEL);
                 ConsoleUtils.afficher(
                         ConsoleUtils.YELLOW +
-                                enemies.indexOf(enemy)+1 + " - " +
+                                enemiesInCurrentRoom.indexOf(enemy) + 1 + " - " +
                                 enemy.getName() + ConsoleUtils.SPACE + "(" + enemyStatus + ")" + ConsoleUtils.RETOUR +
                                 ConsoleUtils.RESET
                 );
             });
         }
+
+        if (!CollectionUtils.isEmpty(itemsInCurrentRoom)) {
+            if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                contentService.getString(ContentKey.COMMON_ROOM_ITEMS) +
+                                ConsoleUtils.RETOUR +
+                                ConsoleUtils.RESET
+                );
+                itemsInCurrentRoom.forEach(item -> {
+                    ConsoleUtils.afficher(
+                            ConsoleUtils.YELLOW +
+                                    itemsInCurrentRoom.indexOf(item) + 1 + " - " +
+                                    item.getName() + ConsoleUtils.SPACE + "(" + item.getName() + ")" + ConsoleUtils.RETOUR +
+                                    ConsoleUtils.RESET
+                    );
+                });
+            } else {
+                // TODO : Afficher un message d'erreur si le joueur tente d'explorer une salle avec des ennemis vivants
+                ConsoleUtils.afficher(
+                        ConsoleUtils.RED +
+                                contentService.getString(ContentKey.COMMON_ROOM_ITEMS_ERROR) +
+                                ConsoleUtils.RETOUR +
+                                ConsoleUtils.RESET
+                );
+            }
+        }
     }
 
     /**
-     * Affiche les salles du donjon et les passages
+     * Affiche les salles du donjon, leur position et les passages
+     * Pour le debug du donjon
      */
     private void explorerDonjon() {
        // TODO : Afficher les salles du donjon (DEBUG Dungeon)
@@ -200,13 +231,20 @@ public class GameServiceImpl implements GameService {
             String passagesListe = room.getPassages().stream()
                     .map(p -> p.getDirection().getContent(contentService))
                     .collect(Collectors.joining(", "));
+            String position = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_POSITION, ConsoleUtils.SPACE + room.getDungeonPosition());
+            String exit = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_EXIT, ConsoleUtils.SPACE + room.getIsExit());
+            String enemies = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_ENEMIES, ConsoleUtils.SPACE + room.getEnemies());
+            String items = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_ITEMS, ConsoleUtils.SPACE + room.getItems());
 
             // Affiche la salle + passages
-            ConsoleUtils.afficher(
+            ConsoleUtils.afficher(true,
                     ConsoleUtils.YELLOW +
                             room.getName() + ConsoleUtils.RETOUR +
-                            room.getDescription() + ConsoleUtils.RETOUR +
-                            "Passages : " + passagesListe + ConsoleUtils.RESET
+                            position + ConsoleUtils.RETOUR +
+                            exit + ConsoleUtils.RETOUR +
+                            enemies + ConsoleUtils.RETOUR +
+                            items + ConsoleUtils.RETOUR +
+                            passagesListe + ConsoleUtils.RESET
             );
         });
 
@@ -255,9 +293,9 @@ public class GameServiceImpl implements GameService {
             } else {
                 nextRoom.setIsVisited(true);
             }
-            if (nextRoom.isExit()) {
+            if (nextRoom.getIsExit()) {
                 // TODO : Afficher message de victoire
-                gameStarted = false;
+                exitGame();
             }
         } else {
             ConsoleUtils.afficher(
@@ -278,11 +316,12 @@ public class GameServiceImpl implements GameService {
             Action action = Action.fromInput(input, contentService);
             switch (action) {
                 case QUIT:
-                    quitterJeu();
+                    exitGame();
                     break;
                 case EXPLORE:
                     explorerSalle();
-                    //TODEBUG : explorerDonjon();
+                    //TODO: uncomment to DEBUG dungeon
+                    explorerDonjon();
                     break;
                 case HELP:
                     afficherActionsDisponibles();
@@ -304,9 +343,11 @@ public class GameServiceImpl implements GameService {
 
     /**
      * Quitte le jeu
+     * Affiche un message de départ
      */
-    private void quitterJeu() {
-        gameStarted = false;
+    @Override
+    public void exitGame() {
+        this.gameStarted = false;
         ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GOODBYE), player.getName());
     }
 

@@ -8,18 +8,26 @@ import com.rva.dungeon.service.DungeonService;
 import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.utils.content.ContentKey;
 import com.rva.dungeon.utils.random.RandomUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DungeonServiceImpl implements DungeonService {
 
+    private Logger logger = LoggerFactory.getLogger(DungeonServiceImpl.class);
+
     @Override
     public Dungeon generate(int numberOfRooms, ContentService contentService) {
         // Création des salles
         List<Room> rooms = generateRooms(numberOfRooms, contentService);
+        logger.info("Generating dungeon with {} rooms parameter", numberOfRooms);
 
-        // Génération d'une sortie
+        // Création des passages entre les salles
+        generateRandomPassage(rooms);
+
+        // Génération d'une sortie et retrait des salles sans passages
         generateExit(rooms, contentService);
 
         // Génération des enemies
@@ -29,9 +37,6 @@ public class DungeonServiceImpl implements DungeonService {
         // Génération des objets
         // TODO : Génération des objets
         generateItems(rooms);
-
-        // Création des passages entre les salles
-        generateRandomPassage(rooms);
 
         // Ajout des salles au donjon
         return new Dungeon(rooms);
@@ -94,11 +99,13 @@ public class DungeonServiceImpl implements DungeonService {
                 // Obtenir une direction aléatoire qui est libre selon les passages existants
                 Direction availableRandomDirection = getAvailableRandomDirection(current);
 
-               if (availableRandomDirection != null && !current.isConnectedTo(target)) {
+               if (availableRandomDirection != null) {
                    // Vérifier si la salle cible n'est pas déjà reliée dans la direction opposée à une autre salle
                    boolean alreadyLinkedTarget = target.hasPassageInDirection(Direction.getOpposite(availableRandomDirection));
+                   // Vérifier si la salle actuelle n'est pas déjà connectée à la salle cible
+                   boolean aldreadyConnected = current.isConnectedTo(target);
 
-                        if (!alreadyLinkedTarget) {
+                        if (!alreadyLinkedTarget && !aldreadyConnected) {
                             // Créer le passage entre les deux salles
                             current.getPassages().add(new Passage(availableRandomDirection, target, false));
                             // Créer le passage dans l'autre sens
@@ -133,33 +140,45 @@ public class DungeonServiceImpl implements DungeonService {
 
     /**
      * Génère une sortie dans le donjon.
-     * La sortie est placée dans une salle aléatoire parmi les 75% des dernières salles de la liste.
-     * La sortie est définie comme une salle avec le moins de connexions possibles.
-     * Il faut donc arriver à une salle dont le numéro est supérieur à 25% du nombre total de salles pour pouvoir sortir.
+     * La sortie est placée dans une salle aléatoire parmi les salles les plus éloignées du donjon.
+     * Cette méthode sélectionne les salles ayant la position la plus élevée dans le donjon,
+     * puis choisit une salle avec le moins de connexions pour y placer la sortie.
+     *
      * @param rooms - Liste des salles du donjon
      * @param contentService - Service de contenu pour obtenir les descriptions
      */
     private void generateExit(List<Room> rooms, ContentService contentService) {
+        // On retire les salles qui n'ont pas de passages ou qui n'ont pas de position
+        rooms = rooms.stream()
+                .filter(room -> !room.getPassages().isEmpty())
+                .toList();
+        logger.info("Dungeon created with {} rooms", rooms.size());
 
-        // Exclure 25% des salles (on ne peut pas sortir des salles de départ)
-        int limite = rooms.size() / 4;
-        List<Room> candidates = new ArrayList<>();
-        for (int i = limite; i < rooms.size(); i++) {
-            candidates.add(rooms.get(i));
-        }
+        // Chercher la position la plus grande
+        int maxPos = rooms.stream()
+                .mapToInt(Room::getDungeonPosition)
+                .max()
+                .orElse(0);
 
-        // Choisir les salles restantes ayant le moins de connexions
+        // Calculer le seuil (25% des salles les plus éloignées)
+        int seuil = (int)(maxPos - (maxPos * 0.25));
+
+        // Sélection des salles ayant une position >= seuil
+        List<Room> candidates = rooms.stream()
+                .filter(r -> r.getDungeonPosition() >= seuil)
+                .toList();
+
+        // Récupérer les salles ayant le moins de connexions
         int minConnections = candidates.stream()
                 .mapToInt(r -> r.getPassages().size())
                 .min()
                 .orElse(Integer.MAX_VALUE);
-
         List<Room> leastConnectedRooms = candidates.stream()
                 .filter(r -> r.getPassages().size() == minConnections)
                 .toList();
 
         // Choisir une salle au hasard parmi les candidates restantes
-        Room exitRoom = leastConnectedRooms.get(RandomUtils.randomMax(candidates.size() - 1));
+        Room exitRoom = leastConnectedRooms.get(RandomUtils.randomMax(leastConnectedRooms.size() - 1));
 
         // Créer la sortie
         exitRoom.setDescription(contentService.getString(ContentKey.COMMON_ROOM_DESCRIPTION_EXIT));
