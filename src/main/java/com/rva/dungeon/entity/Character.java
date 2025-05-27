@@ -1,6 +1,8 @@
 package com.rva.dungeon.entity;
 
 import com.rva.dungeon.model.Room;
+import com.rva.dungeon.service.ContentService;
+import com.rva.dungeon.utils.content.ContentKey;
 
 public abstract class Character {
 
@@ -98,6 +100,11 @@ public abstract class Character {
 
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+    }
+
+    public String getIsAliveFormatedString(ContentService contentService) {
+        return isAlive ?
+                contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_ALIVE_LABEL) : contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_DEAD_LABEL);
     }
 
 }

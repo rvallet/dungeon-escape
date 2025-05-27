@@ -59,6 +59,8 @@ public enum ContentKey {
     COMMON_ROOM_ENEMIES_DEAD("common.room.enemies.dead"),
     COMMON_ROOM_ENEMIES_ALIVE_LABEL("common.room.enemies.alive.label"),
     COMMON_ROOM_ENEMIES_DEAD_LABEL("common.room.enemies.dead.label"),
+    COMMON_ROOM_ITEMS("common.room.items"),
+    COMMON_ROOM_ITEMS_ERROR("common.room.items.error"),
 
     COMMON_ROOM_DESCRIPTION_1("common.room.description.1"),
     COMMON_ROOM_DESCRIPTION_2("common.room.description.2"),
@@ -100,7 +102,12 @@ public enum ContentKey {
     DUNGEON_USE_ITEM("dungeon.use_item"),
     DUNGEON_INVENTORY("dungeon.inventory"),
     DUNGEON_HELP("dungeon.help"),
-    DUNGEON_INTRO("dungeon.intro"),;
+    DUNGEON_INTRO("dungeon.intro"),
+    DUNGEON_DEBUG_POSITION("dungeon.debug.position"),
+    DUNGEON_DEBUG_ENEMIES("dungeon.debug.enemies"),
+    DUNGEON_DEBUG_ITEMS("dungeon.debug.items"),
+    DUNGEON_DEBUG_EXIT("dungeon.debug.exit"),
+    DUNGEON_DEBUG_PASSAGES("dungeon.debug.passages"),;
 
     private final String key;
 

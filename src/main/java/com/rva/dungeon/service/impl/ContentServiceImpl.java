@@ -27,6 +27,17 @@ public class ContentServiceImpl implements ContentService {
     }
 
     /**
+     * Récupère la chaîne de caractères formatée associée à la clé donnée du fichier de ressources.
+     * @param key - la clé de la chaîne de caractères à récupérer
+     * @param args - les arguments pour formater la chaîne
+     * @return - la chaîne de caractères formatée associée à la clé
+     */
+    public String getFormattedString(ContentKey key, Object... args) {
+        String format = this.bundle.getString(key.toString());
+        return String.format(format, args);
+    }
+
+    /**
      * Change la locale du contenu et charge le bundle correspondant.
      * Requiert la présence du fichier properties
      * correspondant.

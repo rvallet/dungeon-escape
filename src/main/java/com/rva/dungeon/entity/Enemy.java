@@ -14,6 +14,12 @@ public class Enemy extends Character {
         setHealth(enemyType.getHealth());
         setAttackPower(enemyType.getStrength());
         setGold(enemyType.getGoldPieces());
+
+    }
+
+    @Override
+    public String toString() {
+        return getName() + " (" + getIsAlive() + ")";
     }
 
 }

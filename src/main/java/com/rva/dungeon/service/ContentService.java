@@ -8,6 +8,8 @@ public interface ContentService {
 
     String getString(ContentKey key);
 
+    String getFormattedString(ContentKey key, Object... args);
+
     void setLocale(Locale locale);
 
 }

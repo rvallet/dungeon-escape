@@ -11,6 +11,7 @@ public class Room {
 
     private String name;
     private int roomIndex;
+    private int dungeonPosition = 0; // Position dans le donjon.
     private String description;
     private boolean isVisited;
     private boolean isExit;
@@ -39,6 +40,14 @@ public class Room {
 
     public void setRoomIndex(int roomIndex) {
         this.roomIndex = roomIndex;
+    }
+
+    public int getDungeonPosition() {
+        return dungeonPosition;
+    }
+
+    public void setDungeonPosition(int dungeonPosition) {
+        this.dungeonPosition = dungeonPosition;
     }
 
     public String getDescription() {
@@ -81,7 +90,7 @@ public class Room {
         this.isVisited = isVisited;
     }
 
-    public boolean isExit() {
+    public boolean getIsExit() {
         return isExit;
     }
 
@@ -92,16 +101,18 @@ public class Room {
     /**
      * Détermine si la salle possède un passage dans une direction donnée.
      * Cette méthode est utilisée pour vérifier si la salle actuelle peut être atteinte.
+     *
      * @param dir - Direction
      * @return - true si un passage existe dans la direction donnée, false sinon
      */
-    public boolean hasPassageInDirection (Direction dir) {
+    public boolean hasPassageInDirection(Direction dir) {
         return this.getPassages().stream().anyMatch(passage -> passage.getDirection() == dir);
     }
 
     /**
      * Vérifie si la salle est connectée à une autre salle.
      * Cette méthode est utilisée pour déterminer si la salle actuelle peut être atteinte quelle que soit la direction.
+     *
      * @param other - Salle cible
      * @return true si connectée, false sinon
      */
@@ -111,8 +122,9 @@ public class Room {
 
     /**
      * Déplace le joueur vers la salle dans la direction spécifiée.
+     *
      * @param currentRoom - Salle actuelle
-     * @param direction - Direction vers laquelle se déplacer
+     * @param direction   - Direction vers laquelle se déplacer
      * @return - Salle cible ou null si aucun passage n'existe dans cette direction
      */
     public static Room moveToRoomInDirection(Room currentRoom, Direction direction) {
@@ -126,7 +138,8 @@ public class Room {
 
     /**
      * Affiche les directions disponibles dans la salle actuelle.
-     * @param room - Salle actuelle
+     *
+     * @param room           - Salle actuelle
      * @param contentService - Service de contenu pour obtenir les descriptions
      * @return - Liste des directions disponibles
      */
@@ -145,12 +158,17 @@ public class Room {
 
     /**
      * Vérifie si la salle as au moins un ennemi vivant.
+     *
      * @return true si au moins un ennemi est vivant, false sinon
      */
-    public boolean hasAnyEnemyAlive(){
+    public boolean hasAnyEnemyAlive() {
         return
                 !CollectionUtils.isEmpty(enemies)
-                && this.enemies.stream().anyMatch(Enemy::getIsAlive);
+                        && this.enemies.stream().anyMatch(Enemy::getIsAlive);
+    }
+
+    public boolean hasAnyItem() {
+        return !CollectionUtils.isEmpty(items);
     }
 
 }
