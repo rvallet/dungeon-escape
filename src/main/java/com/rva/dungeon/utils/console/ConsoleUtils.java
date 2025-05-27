@@ -19,6 +19,8 @@ public class ConsoleUtils {
     public static final String RETOUR = "\n";
     public static final String SPACE = " ";
     public static final String DOT = ".";
+    public static final String OPEN_PARENTHESIS = "(";
+    public static final String CLOSE_PARENTHESIS = ")";
 
     // Code de réinitialisation
     public static final String RESET = "\u001b[0m";

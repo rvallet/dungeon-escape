@@ -106,7 +106,8 @@ public enum ContentKey {
     DUNGEON_DEBUG_POSITION("dungeon.debug.position"),
     DUNGEON_DEBUG_ENEMIES("dungeon.debug.enemies"),
     DUNGEON_DEBUG_ITEMS("dungeon.debug.items"),
-    DUNGEON_DEBUG_EXIT("dungeon.debug.exit"),;
+    DUNGEON_DEBUG_EXIT("dungeon.debug.exit"),
+    DUNGEON_DEBUG_PASSAGES("dungeon.debug.passages"),;
 
     private final String key;
 

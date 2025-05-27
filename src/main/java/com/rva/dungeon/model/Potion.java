@@ -46,4 +46,13 @@ public class Potion extends Item {
         this.defense = defense;
     }
 
+    @Override
+    public String toString() {
+        return switch (potionType) {
+            case HEALTH -> getName() + " (" + health + ")";
+            case STRENGTH -> getName() + " (" + strength + ")";
+            case DEFENSE -> getName() + " (" + defense + ")";
+        };
+    }
+
 }

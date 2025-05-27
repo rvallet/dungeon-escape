@@ -68,7 +68,7 @@ public class GameServiceImpl implements GameService {
 
     /**
      * Choisit la difficulté du jeu :
-     * 1 : Facile (10-20 salles)
+     * 1 : Facile (11-20 salles)
      * 2 : Moyen (21-50 salles)
      * 3 : Difficile (51-100 salles)
      */
@@ -77,17 +77,16 @@ public class GameServiceImpl implements GameService {
         String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_MAGENTA, contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY_PROMPT));
         switch (choix){
             case "2":
-                dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
+                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
                 break;
             case "3":
-                dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
+                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
                 break;
             case "1":
             default:
-                dungeon = dungeonService.generate(RandomUtils.randomBetween(10, 20), contentService);
+                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(11, 20), contentService);
         }
-        // Calcul des positions des salles dans le donjon
-        dungeon.dungeonRoomPositionCompute();
+
     }
 
     /**
@@ -154,24 +153,8 @@ public class GameServiceImpl implements GameService {
      * Affiche le détail de la salle actuelle
      */
     private void explorerSalle() {
-        // TODO : Afficher les enemis de la salle actuelle et les objets
         List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
         List<Item> itemsInCurrentRoom = player.getCurrentRoom().getItems();
-
-        ConsoleUtils.afficher(
-                ConsoleUtils.YELLOW +
-                        player.getCurrentRoom().getDescription() +
-                        ConsoleUtils.RETOUR +
-                        ConsoleUtils.RESET
-        );
-
-        if (player.getCurrentRoom().isVisited()) {
-            ConsoleUtils.afficher(
-                    ConsoleUtils.YELLOW +
-                            contentService.getString(ContentKey.COMMON_ROOM_VISITED) +
-                            ConsoleUtils.RESET
-            );
-        }
 
         if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
             ConsoleUtils.afficher(
@@ -181,12 +164,13 @@ public class GameServiceImpl implements GameService {
                             ConsoleUtils.RESET
             );
             enemiesInCurrentRoom.forEach(enemy -> {
-                String enemyStatus = enemy.getIsAlive() ?
-                        contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_ALIVE_LABEL) : contentService.getString(ContentKey.COMMON_ROOM_ENEMIES_DEAD_LABEL);
+                int index = enemiesInCurrentRoom.indexOf(enemy) + 1;
+                String enemyStatus = enemy.getIsAliveFormatedString(contentService);
                 ConsoleUtils.afficher(
                         ConsoleUtils.YELLOW +
-                                enemiesInCurrentRoom.indexOf(enemy) + 1 + " - " +
-                                enemy.getName() + ConsoleUtils.SPACE + "(" + enemyStatus + ")" + ConsoleUtils.RETOUR +
+                                index + " - " +
+                                enemy.getName() + ConsoleUtils.SPACE +
+                                ConsoleUtils.OPEN_PARENTHESIS + enemyStatus + ConsoleUtils.CLOSE_PARENTHESIS +
                                 ConsoleUtils.RESET
                 );
             });
@@ -201,11 +185,13 @@ public class GameServiceImpl implements GameService {
                                 ConsoleUtils.RESET
                 );
                 itemsInCurrentRoom.forEach(item -> {
+                    int index = itemsInCurrentRoom.indexOf(item) + 1;
                     ConsoleUtils.afficher(
                             ConsoleUtils.YELLOW +
-                                    itemsInCurrentRoom.indexOf(item) + 1 + " - " +
-                                    item.getName() + ConsoleUtils.SPACE + "(" + item.getName() + ")" + ConsoleUtils.RETOUR +
-                                    ConsoleUtils.RESET
+                                    index + " - " +
+                                    item.getName() + ConsoleUtils.SPACE +
+                                    ConsoleUtils.OPEN_PARENTHESIS + item.getName() + ConsoleUtils.CLOSE_PARENTHESIS +
+                                    ConsoleUtils.RETOUR + ConsoleUtils.RESET
                     );
                 });
             } else {
@@ -225,12 +211,12 @@ public class GameServiceImpl implements GameService {
      * Pour le debug du donjon
      */
     private void explorerDonjon() {
-       // TODO : Afficher les salles du donjon (DEBUG Dungeon)
         dungeon.getRooms().forEach(room -> {
             // Crée une liste de descriptions pour chaque passage
             String passagesListe = room.getPassages().stream()
                     .map(p -> p.getDirection().getContent(contentService))
                     .collect(Collectors.joining(", "));
+            String passages = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_PASSAGES, ConsoleUtils.SPACE + passagesListe);
             String position = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_POSITION, ConsoleUtils.SPACE + room.getDungeonPosition());
             String exit = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_EXIT, ConsoleUtils.SPACE + room.getIsExit());
             String enemies = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_ENEMIES, ConsoleUtils.SPACE + room.getEnemies());
@@ -244,7 +230,7 @@ public class GameServiceImpl implements GameService {
                             exit + ConsoleUtils.RETOUR +
                             enemies + ConsoleUtils.RETOUR +
                             items + ConsoleUtils.RETOUR +
-                            passagesListe + ConsoleUtils.RESET
+                            passages + ConsoleUtils.RESET
             );
         });
 
@@ -254,7 +240,6 @@ public class GameServiceImpl implements GameService {
      * Choisit une direction pour se déplacer dans le donjon
      */
     private void choisirDirection() {
-        // TODO : Choisir une direction - Optimiser code et affichage des directions
         String directions = Room.displayFormatedAvailableDirections(
                 player.getCurrentRoom(),
                 contentService
@@ -321,7 +306,7 @@ public class GameServiceImpl implements GameService {
                 case EXPLORE:
                     explorerSalle();
                     //TODO: uncomment to DEBUG dungeon
-                    explorerDonjon();
+                    //explorerDonjon();
                     break;
                 case HELP:
                     afficherActionsDisponibles();
