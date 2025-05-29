@@ -8,8 +8,10 @@ public enum Action {
     EXPLORE(1, ContentKey.ACTION_CODE_1, ContentKey.ACTION_CODE_1_DESCRIPTION),
     DIRECTION(2, ContentKey.ACTION_CODE_2, ContentKey.ACTION_CODE_2_DESCRIPTION),
     CHARACTER(3, ContentKey.ACTION_CODE_3, ContentKey.ACTION_CODE_3_DESCRIPTION),
-    HELP(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
-    QUIT(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION);
+    FIGHT(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
+    INVENTORY(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION),
+    HELP(6, ContentKey.ACTION_CODE_6, ContentKey.ACTION_CODE_6_DESCRIPTION),
+    QUIT(7, ContentKey.ACTION_CODE_7, ContentKey.ACTION_CODE_7_DESCRIPTION);
 
     private final int number;
     private final ContentKey code;

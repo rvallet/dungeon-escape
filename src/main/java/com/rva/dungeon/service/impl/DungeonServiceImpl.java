@@ -264,7 +264,6 @@ public class DungeonServiceImpl implements DungeonService {
      * @param contentService - Service de contenu pour obtenir les descriptions des ennemis
      */
     private void generateEnemies(List<Room> rooms, ContentService contentService) {
-        // TODO : Génération des ennemis
         rooms.forEach(room -> {
             int dungeonPosition = room.getDungeonPosition();
             List<Enemy> enemies = generateRandomListOfEnemies(dungeonPosition, contentService);

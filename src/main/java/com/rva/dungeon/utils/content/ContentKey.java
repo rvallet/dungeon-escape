@@ -6,9 +6,8 @@ import java.util.List;
 public enum ContentKey {
 
     INIT_SELECT_LANGUAGE("init.select.language"),
-    INIT_SELECT_LANGUAGE_PROMPT("init.select.language.prompt"),
     INIT_SELECT_DIFFICULTY("init.select.difficulty"),
-    INIT_SELECT_DIFFICULTY_PROMPT("init.select.difficulty.prompt"),
+    INIT_SELECT_PROMPT("init.select.prompt"),
 
     ACTION_CODE_1("action.code.1"),
     ACTION_CODE_1_DESCRIPTION("action.code.1.description"),
@@ -20,6 +19,10 @@ public enum ContentKey {
     ACTION_CODE_4_DESCRIPTION("action.code.4.description"),
     ACTION_CODE_5("action.code.5"),
     ACTION_CODE_5_DESCRIPTION("action.code.5.description"),
+    ACTION_CODE_6("action.code.6"),
+    ACTION_CODE_6_DESCRIPTION("action.code.6.description"),
+    ACTION_CODE_7("action.code.7"),
+    ACTION_CODE_7_DESCRIPTION("action.code.7.description"),
 
     DIRECTION_NORTH("direction.north"),
     DIRECTION_SOUTH("direction.south"),
@@ -83,6 +86,7 @@ public enum ContentKey {
     COMMON_ROOM_DESCRIPTION_19("common.room.description.19"),
     COMMON_ROOM_DESCRIPTION_20("common.room.description.20"),
     COMMON_ROOM_DESCRIPTION_EXIT("common.room.description.exit"),
+    COMMON_ROOM_DESCRIPTION_EMPTY("common.room.description.empty"),
 
     COMMON_COMMAND_ACTIONS("common.command.actions"),
     COMMON_COMMAND_UNKNOWN("common.command.unknown"),
@@ -93,6 +97,16 @@ public enum ContentKey {
     COMMON_COMMAND_USE_ITEM("common.command.use_item"),
     COMMON_COMMAND_INVENTORY("common.command.inventory"),
     COMMON_COMMAND_HELP("common.command.help"),
+
+    COMMON_FIGHT_PROMPT("common.fight.prompt"),
+    COMMON_FIGHT_UNKNOWN("common.fight.unknown"),
+    COMMON_FIGHT_LAUNCHED("common.fight.launched"),
+    COMMON_FIGHT_NO_ENEMIES("common.fight.no.enemies"),
+    COMMON_FIGHT_NO_ENEMIES_ALIVE("common.fight.no.enemies.alive"),
+    COMMON_FIGHT_ENEMY_DEAD("common.fight.enemy.dead"),
+    COMMON_ATTACK_RESULT("common.attack.result"),
+    COMMON_CHARACTER_DEAD("common.character.dead"),
+    COMMON_CHARACTER_DEFEAT("common.character.defeat"),
 
     DUNGEON_EXPLORE("dungeon.explore"),
     DUNGEON_ENTER("dungeon.enter"),
