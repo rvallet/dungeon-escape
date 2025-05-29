@@ -1,5 +1,6 @@
 package com.rva.dungeon.service.impl;
 
+import com.rva.dungeon.entity.Character;
 import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
@@ -55,7 +56,7 @@ public class GameServiceImpl implements GameService {
      */
     private void choixLangue(){
         ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_LANGUAGE));
-        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.INIT_SELECT_LANGUAGE_PROMPT));
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.INIT_SELECT_PROMPT));
         switch (choix){
             case "2":
                 contentService.setLocale(Locale.forLanguageTag("en-US"));
@@ -74,17 +75,17 @@ public class GameServiceImpl implements GameService {
      */
     private void choixDifficulte() {
         ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY));
-        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_MAGENTA, contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY_PROMPT));
+        String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_MAGENTA, contentService.getString(ContentKey.INIT_SELECT_PROMPT));
         switch (choix){
             case "2":
-                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
                 break;
             case "3":
-                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
                 break;
             case "1":
             default:
-                this.dungeon = dungeonService.generate(RandomUtils.randomBetween(11, 20), contentService);
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(11, 20), contentService);
         }
 
     }
@@ -156,6 +157,17 @@ public class GameServiceImpl implements GameService {
         List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
         List<Item> itemsInCurrentRoom = player.getCurrentRoom().getItems();
 
+        if (CollectionUtils.isEmpty(enemiesInCurrentRoom) && CollectionUtils.isEmpty(itemsInCurrentRoom)) {
+            // Si la salle est vide, on affiche un message d'information
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            contentService.getString(ContentKey.COMMON_ROOM_DESCRIPTION_EMPTY) +
+                            ConsoleUtils.RETOUR +
+                            player.getCurrentRoom().getDescription() +
+                            ConsoleUtils.RESET
+            );
+        }
+
         if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
@@ -191,15 +203,14 @@ public class GameServiceImpl implements GameService {
                                     index + " - " +
                                     item.getName() + ConsoleUtils.SPACE +
                                     ConsoleUtils.OPEN_PARENTHESIS + item.getName() + ConsoleUtils.CLOSE_PARENTHESIS +
-                                    ConsoleUtils.RETOUR + ConsoleUtils.RESET
+                                    ConsoleUtils.RESET
                     );
                 });
             } else {
-                // TODO : Afficher un message d'erreur si le joueur tente d'explorer une salle avec des ennemis vivants
+                // Si des ennemis sont présents, on n'affiche pas les items
                 ConsoleUtils.afficher(
                         ConsoleUtils.RED +
                                 contentService.getString(ContentKey.COMMON_ROOM_ITEMS_ERROR) +
-                                ConsoleUtils.RETOUR +
                                 ConsoleUtils.RESET
                 );
             }
@@ -291,6 +302,77 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    private void combattreEnnemis() {
+        if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
+            return;
+        }
+
+        // Vérifier s'il y a des ennemis dans la salle actuelle
+        List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
+
+        if (CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES));
+            return;
+        }
+
+        List<Enemy> aliveEnemies = enemiesInCurrentRoom.stream()
+                .filter(Enemy::getIsAlive)
+                .toList();
+        Enemy selectedEnemy = null;
+
+        // Si un seul ennemi, on le combat directement
+        if (aliveEnemies.size() > 1) {
+            // Demander au joueur de choisir un adversaire à combattre
+            ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.COMMON_FIGHT_PROMPT) + ConsoleUtils.RETOUR);
+            for (int i = 0; i < enemiesInCurrentRoom.size(); i++) {
+                Enemy enemy = enemiesInCurrentRoom.get(i);
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                (i + 1) + " - " +
+                                enemy.getName() + ConsoleUtils.SPACE +
+                                ConsoleUtils.OPEN_PARENTHESIS + enemy.getIsAliveFormatedString(contentService) + ConsoleUtils.CLOSE_PARENTHESIS +
+                                ConsoleUtils.RESET
+                );
+            }
+            String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.INIT_SELECT_PROMPT));
+
+            // Vérifier si l'entrée est un nombre valide
+            try {
+                int choice = Integer.parseInt(input);
+                if (choice < 1 || choice > enemiesInCurrentRoom.size()) {
+                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
+                    return;
+                }
+
+                // Sélectionner l'ennemi choisi
+                selectedEnemy = enemiesInCurrentRoom.get(choice - 1);
+
+                if (!selectedEnemy.getIsAlive()) {
+                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_ENEMY_DEAD));
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
+            }
+        } else {
+            // Si un seul ennemi, on le combat directement
+            selectedEnemy = aliveEnemies.getFirst();
+        }
+
+        if (selectedEnemy != null) {
+            //ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.COMMON_FIGHT_START, selectedEnemy.getName()));
+            while (player.getIsAlive() && selectedEnemy.getIsAlive()) {
+
+                // Logique de combat (attaque du joueur puis de l'ennemi)
+                player.launchFight(selectedEnemy, contentService);
+            }
+        } else {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
+        }
+
+    }
+
     /**
      * Boucle principale du jeu
      */
@@ -305,8 +387,6 @@ public class GameServiceImpl implements GameService {
                     break;
                 case EXPLORE:
                     explorerSalle();
-                    //TODO: uncomment to DEBUG dungeon
-                    //explorerDonjon();
                     break;
                 case HELP:
                     afficherActionsDisponibles();
@@ -317,8 +397,15 @@ public class GameServiceImpl implements GameService {
                 case DIRECTION:
                     choisirDirection();
                     break;
-                case null:
-                default:
+                case FIGHT:
+                    combattreEnnemis();
+                    break;
+                case INVENTORY:
+                    //TODO: uncomment to DEBUG dungeon
+                    System.out.println("DEBUG: Inventory not implemented yet.");
+                    explorerDonjon();
+                    break;
+                case null, default:
                     ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_COMMAND_UNKNOWN));
                     break;
             }
