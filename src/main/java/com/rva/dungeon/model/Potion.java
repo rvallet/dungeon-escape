@@ -2,6 +2,7 @@ package com.rva.dungeon.model;
 
 import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.service.ContentService;
+import com.rva.dungeon.utils.content.ContentKey;
 
 public class Potion extends Item {
 
@@ -16,6 +17,11 @@ public class Potion extends Item {
         this.health = potionType.getHealth();
         this.strength = potionType.getStrength();
         this.defense = potionType.getDefense();
+        switch (potionType) {
+            case HEALTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_DESCRIPTION, getHealth()));
+            case STRENGTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_DESCRIPTION, getStrength()));
+            case DEFENSE -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_DESCRIPTION, getDefense()));
+        }
     }
 
     public PotionType getPotionType() {

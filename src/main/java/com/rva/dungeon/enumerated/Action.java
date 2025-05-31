@@ -11,7 +11,8 @@ public enum Action {
     FIGHT(4, ContentKey.ACTION_CODE_4, ContentKey.ACTION_CODE_4_DESCRIPTION),
     INVENTORY(5, ContentKey.ACTION_CODE_5, ContentKey.ACTION_CODE_5_DESCRIPTION),
     HELP(6, ContentKey.ACTION_CODE_6, ContentKey.ACTION_CODE_6_DESCRIPTION),
-    QUIT(7, ContentKey.ACTION_CODE_7, ContentKey.ACTION_CODE_7_DESCRIPTION);
+    QUIT(7, ContentKey.ACTION_CODE_7, ContentKey.ACTION_CODE_7_DESCRIPTION),
+    DEBUG(666, ContentKey.ACTION_CODE_666, ContentKey.ACTION_CODE_666_DESCRIPTION); // DEBUG action for testing purposes
 
     private final int number;
     private final ContentKey code;
@@ -63,6 +64,9 @@ public enum Action {
     public static String getActionList(ContentService contentService) {
         StringBuilder actionList = new StringBuilder();
         for (Action action : Action.values()) {
+            if (action == DEBUG) {
+                continue; // Skip DEBUG action in the list
+            }
             actionList
                     .append(action.getNumber())
                     .append(" - '")

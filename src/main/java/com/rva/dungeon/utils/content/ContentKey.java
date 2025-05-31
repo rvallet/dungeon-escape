@@ -23,6 +23,8 @@ public enum ContentKey {
     ACTION_CODE_6_DESCRIPTION("action.code.6.description"),
     ACTION_CODE_7("action.code.7"),
     ACTION_CODE_7_DESCRIPTION("action.code.7.description"),
+    ACTION_CODE_666("action.code.666"),
+    ACTION_CODE_666_DESCRIPTION("action.code.666.description"),
 
     DIRECTION_NORTH("direction.north"),
     DIRECTION_SOUTH("direction.south"),
@@ -88,6 +90,10 @@ public enum ContentKey {
     COMMON_ROOM_DESCRIPTION_EXIT("common.room.description.exit"),
     COMMON_ROOM_DESCRIPTION_EMPTY("common.room.description.empty"),
 
+    COMMON_ITEM_HEALTH_POTION_DESCRIPTION("common.item.health.potion.description"),
+    COMMON_ITEM_STRENGTH_POTION_DESCRIPTION("common.item.strength.potion.description"),
+    COMMON_ITEM_DEFENSE_POTION_DESCRIPTION("common.item.defense.potion.description"),
+
     COMMON_COMMAND_ACTIONS("common.command.actions"),
     COMMON_COMMAND_UNKNOWN("common.command.unknown"),
     COMMON_COMMAND_QUIT("common.command.quit"),
@@ -104,6 +110,7 @@ public enum ContentKey {
     COMMON_FIGHT_NO_ENEMIES("common.fight.no.enemies"),
     COMMON_FIGHT_NO_ENEMIES_ALIVE("common.fight.no.enemies.alive"),
     COMMON_FIGHT_ENEMY_DEAD("common.fight.enemy.dead"),
+    COMMON_FIGHT_ENEMY_LOOT("common.fight.enemy.loot"),
     COMMON_ATTACK_RESULT("common.attack.result"),
     COMMON_CHARACTER_DEAD("common.character.dead"),
     COMMON_CHARACTER_DEFEAT("common.character.defeat"),
