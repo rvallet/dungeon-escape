@@ -148,12 +148,12 @@ public abstract class Character {
             return;
         }
         //String msg = contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName());
-        ConsoleUtils.afficherCouleur(ConsoleUtils.BRIGHT_YELLOW,
+        ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW,
                 ConsoleUtils.RETOUR +  contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName()) + ConsoleUtils.RETOUR);
 
         while (this.getIsAlive() && opponent.getIsAlive()) {
             this.fight(opponent, contentService);
-            if (opponent.getIsAlive()) {
+            if (opponent.getIsAlive() && this.getIsAlive()) {
                 opponent.fight(this, contentService);
             }
         }

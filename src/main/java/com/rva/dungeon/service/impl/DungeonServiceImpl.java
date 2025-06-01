@@ -216,7 +216,7 @@ public class DungeonServiceImpl implements DungeonService {
         Room exitRoom = leastConnectedRooms.get(RandomUtils.randomMax(leastConnectedRooms.size() - 1));
 
         // Créer la sortie
-        exitRoom.setDescription(contentService.getString(ContentKey.COMMON_ROOM_DESCRIPTION_EXIT));
+        exitRoom.setDescription(contentService.getString(ContentKey.COMMON_ROOM_DESC_EXIT));
         exitRoom.setIsExit(true);
 
     }
