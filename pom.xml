@@ -14,7 +14,7 @@
 	<!-- Project Information -->
 	<groupId>com.rva</groupId>
 	<artifactId>dungeon</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>dungeon-escape</name>
 	<description>Jeu de donjon textuel : Escape from the Dungeon</description>
 
