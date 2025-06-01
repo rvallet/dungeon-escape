@@ -161,7 +161,7 @@ public class GameServiceImpl implements GameService {
             // Si la salle est vide, on affiche un message d'information
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
-                            contentService.getString(ContentKey.COMMON_ROOM_DESCRIPTION_EMPTY) +
+                            contentService.getString(ContentKey.COMMON_ROOM_DESC_EMPTY) +
                             ConsoleUtils.RETOUR +
                             player.getCurrentRoom().getDescription() +
                             ConsoleUtils.RESET
@@ -205,6 +205,18 @@ public class GameServiceImpl implements GameService {
                                     ConsoleUtils.RESET
                     );
                 });
+
+                // On ajoute les items à l'inventaire du joueur
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                contentService.getString(ContentKey.COMMON_ROOM_ITEMS_ADDED) +
+                                ConsoleUtils.RETOUR
+                );
+                player.addItemsToInventory(itemsInCurrentRoom);
+
+                // On vide la liste des items de la salle
+                player.getCurrentRoom().setItems(null);
+
             } else {
                 // Si des ennemis sont présents, on n'affiche pas les items
                 ConsoleUtils.afficher(
@@ -302,11 +314,6 @@ public class GameServiceImpl implements GameService {
     }
 
     private void combattreEnnemis() {
-        if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
-            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
-            return;
-        }
-
         // Vérifier s'il y a des ennemis dans la salle actuelle
         List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
 
@@ -315,12 +322,19 @@ public class GameServiceImpl implements GameService {
             return;
         }
 
+        // Vérifier s'il y a des ennemis vivants dans la salle actuelle
+        if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
+            return;
+        }
+
+        // Filtrer les ennemis vivants
         List<Enemy> aliveEnemies = enemiesInCurrentRoom.stream()
                 .filter(Enemy::getIsAlive)
                 .toList();
         Enemy selectedEnemy = null;
 
-        // Si un seul ennemi, on le combat directement
+        // Si plusieurs ennemis vivants sont présents, demander au joueur de choisir un ennemi
         if (aliveEnemies.size() > 1) {
             // Demander au joueur de choisir un adversaire à combattre
             ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.COMMON_FIGHT_PROMPT) + ConsoleUtils.RETOUR);
@@ -340,7 +354,7 @@ public class GameServiceImpl implements GameService {
             try {
                 int choice = Integer.parseInt(input);
                 if (choice < 1 || choice > enemiesInCurrentRoom.size()) {
-                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
+                    ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
                     return;
                 }
 
@@ -348,11 +362,11 @@ public class GameServiceImpl implements GameService {
                 selectedEnemy = enemiesInCurrentRoom.get(choice - 1);
 
                 if (!selectedEnemy.getIsAlive()) {
-                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_ENEMY_DEAD));
+                    ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_ENEMY_DEAD));
                     return;
                 }
             } catch (NumberFormatException e) {
-                ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_UNKNOWN));
             }
         } else {
             // Si un seul ennemi, on le combat directement
@@ -380,7 +394,49 @@ public class GameServiceImpl implements GameService {
                 }
 
         } else {
-            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
+            ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
+        }
+
+    }
+
+    private void utiliserObjetInventaire() {
+        if (CollectionUtils.isEmpty(player.getInventory())) {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.PLAYER_INVENTORY_EMPTY));
+            return;
+        }
+
+        // Demander à l'utilisateur de choisir un objet dans l'inventaire
+        ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.PLAYER_INVENTORY_PROMPT) + ConsoleUtils.RETOUR);
+        for (int i = 0; i < player.getInventory().size(); i++) {
+            Item item = player.getInventory().get(i);
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            (i + 1) + " - " +
+                            item.getName() + ConsoleUtils.SPACE +
+                            ConsoleUtils.OPEN_PARENTHESIS + item.getDescription() + ConsoleUtils.CLOSE_PARENTHESIS +
+                            ConsoleUtils.RESET
+            );
+        }
+
+        String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.INIT_SELECT_PROMPT));
+
+        // Vérifier si l'entrée est un nombre valide
+        try {
+            int choice = Integer.parseInt(input);
+            if (choice < 1 || choice > player.getInventory().size()) {
+                ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.PLAYER_INVENTORY_UNKNOWN));
+                return;
+            }
+
+            // Sélectionner l'objet choisi
+            Item selectedItem = player.getInventory().get(choice - 1);
+
+            // Utiliser l'objet
+            player.useItemFromInventory(selectedItem, contentService);
+
+
+        } catch (NumberFormatException e) {
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.PLAYER_INVENTORY_UNKNOWN));
         }
 
     }
@@ -413,8 +469,7 @@ public class GameServiceImpl implements GameService {
                     combattreEnnemis();
                     break;
                 case INVENTORY:
-                    //TODO: uncomment to DEBUG dungeon
-                    System.out.println("DEBUG: Inventory not implemented yet.");
+                    utiliserObjetInventaire();
                     break;
                 case DEBUG:
                     explorerDonjon();
