@@ -193,7 +193,6 @@ public class GameServiceImpl implements GameService {
                 ConsoleUtils.afficher(
                         ConsoleUtils.YELLOW +
                                 contentService.getString(ContentKey.COMMON_ROOM_ITEMS) +
-                                ConsoleUtils.RETOUR +
                                 ConsoleUtils.RESET
                 );
                 itemsInCurrentRoom.forEach(item -> {
@@ -202,7 +201,7 @@ public class GameServiceImpl implements GameService {
                             ConsoleUtils.YELLOW +
                                     index + " - " +
                                     item.getName() + ConsoleUtils.SPACE +
-                                    ConsoleUtils.OPEN_PARENTHESIS + item.getName() + ConsoleUtils.CLOSE_PARENTHESIS +
+                                    ConsoleUtils.OPEN_PARENTHESIS + item.getDescription() + ConsoleUtils.CLOSE_PARENTHESIS +
                                     ConsoleUtils.RESET
                     );
                 });
@@ -363,10 +362,23 @@ public class GameServiceImpl implements GameService {
         if (selectedEnemy != null) {
             //ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.COMMON_FIGHT_START, selectedEnemy.getName()));
             while (player.getIsAlive() && selectedEnemy.getIsAlive()) {
-
                 // Logique de combat (attaque du joueur puis de l'ennemi)
                 player.launchFight(selectedEnemy, contentService);
             }
+
+            if (!player.getIsAlive()) {
+                exitGame();
+                return;
+            }
+
+                // Si l'ennemi est mort, on récupère son or
+                if (!selectedEnemy.getIsAlive() && selectedEnemy.getGold() > 0) {
+                    ConsoleUtils.afficher(true, ConsoleUtils.BRIGHT_YELLOW +
+                            contentService.getFormattedString(ContentKey.COMMON_FIGHT_ENEMY_LOOT, player.getName(), selectedEnemy.getGold(), selectedEnemy.getName()));
+                    player.setGold(player.getGold() + selectedEnemy.getGold());
+                    selectedEnemy.setGold(0);
+                }
+
         } else {
             ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));
         }
@@ -403,6 +415,8 @@ public class GameServiceImpl implements GameService {
                 case INVENTORY:
                     //TODO: uncomment to DEBUG dungeon
                     System.out.println("DEBUG: Inventory not implemented yet.");
+                    break;
+                case DEBUG:
                     explorerDonjon();
                     break;
                 case null, default:

@@ -127,8 +127,6 @@ public abstract class Character {
                     .replace("%defender%", opponent.getName())
                     .replace("%damage%", String.valueOf(damage));
             ConsoleUtils.afficher(message);
-        } else {
-            //TODO : gain or et objets
         }
     }
 
@@ -139,19 +137,19 @@ public abstract class Character {
             this.setIsAlive(false);
             String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
                     .replace("%name%", this.getName());
-            ConsoleUtils.afficher(msg);
+            ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
         }
     }
 
     public void launchFight(Character opponent, ContentService contentService) {
         if (!this.getIsAlive() || !opponent.getIsAlive()) {
-            String msg = contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE);
+            String msg = ConsoleUtils.RETOUR + contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE);
             ConsoleUtils.afficher(msg);
             return;
         }
         //String msg = contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName());
         ConsoleUtils.afficherCouleur(ConsoleUtils.BRIGHT_YELLOW,
-                contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName() + ConsoleUtils.RETOUR));
+                ConsoleUtils.RETOUR +  contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName()) + ConsoleUtils.RETOUR);
 
         while (this.getIsAlive() && opponent.getIsAlive()) {
             this.fight(opponent, contentService);
@@ -159,7 +157,6 @@ public abstract class Character {
                 opponent.fight(this, contentService);
             }
         }
-
 
     }
 
