@@ -8,6 +8,7 @@ import com.rva.dungeon.utils.content.ContentKey;
 public abstract class Character {
 
     private String name;
+    private int life = 100;
     private int health = 100;
     private int attackPower = 10;
     private int defensePower = 5;
@@ -26,6 +27,7 @@ public abstract class Character {
     }
 
     public Character(int health, int attackPower, int defensePower) {
+        this.life = health;
         this.health = health;
         this.attackPower = attackPower;
         this.defensePower = defensePower;
@@ -37,6 +39,14 @@ public abstract class Character {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
     }
 
     public int getHealth() {

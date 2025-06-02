@@ -91,7 +91,7 @@ public class Player extends Character {
                 case Potion potion -> {
                     switch (potion.getPotionType()) {
                         case HEALTH -> {
-                            setHealth(getHealth() + potion.getHealth());
+                            setHealth(Math.min(getHealth() + potion.getHealth(), getLife()));
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
                                     contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_USED, potion.getHealth())
@@ -111,6 +111,15 @@ public class Player extends Character {
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
                                     contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_USED, potion.getDefense())
+                            );
+                            this.removeItemFromInventory(item);
+                        }
+                        case LIFE -> {
+                            setLife(getLife() + potion.getLife());
+                            setHealth(getHealth() + potion.getLife());
+                            ConsoleUtils.afficherCouleur(
+                                    ConsoleUtils.BRIGHT_YELLOW,
+                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_USED, potion.getLife())
                             );
                             this.removeItemFromInventory(item);
                         }
@@ -137,11 +146,11 @@ public class Player extends Character {
     public String toFormatedString(ContentService contentService) {
         StringBuilder player = new StringBuilder();
         return player
-                .append(contentService.getString(ContentKey.PLAYER_NAME)).append(": ").append(getName()).append("\n")
-                .append(contentService.getString(ContentKey.PLAYER_HEALTH)).append(": ").append(getHealth()).append("\n")
-                .append(contentService.getString(ContentKey.PLAYER_ATTACK)).append(": ").append(getAttackPower()).append("\n")
-                .append(contentService.getString(ContentKey.PLAYER_DEFENSE)).append(": ").append(getDefensePower()).append("\n")
-                .append(contentService.getString(ContentKey.PLAYER_GOLD)).append(": ").append(getGold()).append("\n")
+                .append(contentService.getString(ContentKey.PLAYER_NAME)).append(": ").append(getName()).append(ConsoleUtils.RETOUR)
+                .append(contentService.getString(ContentKey.PLAYER_HEALTH)).append(": ").append(getHealth()).append("/").append(getLife()).append(ConsoleUtils.RETOUR)
+                .append(contentService.getString(ContentKey.PLAYER_ATTACK)).append(": ").append(getAttackPower()).append(ConsoleUtils.RETOUR)
+                .append(contentService.getString(ContentKey.PLAYER_DEFENSE)).append(": ").append(getDefensePower()).append(ConsoleUtils.RETOUR)
+                .append(contentService.getString(ContentKey.PLAYER_GOLD)).append(": ").append(getGold()).append(ConsoleUtils.RETOUR)
                 .append(contentService.getString(ContentKey.PLAYER_INVENTORY)).append(": ").append(getFormatedInventory(contentService))
                 .toString();
 

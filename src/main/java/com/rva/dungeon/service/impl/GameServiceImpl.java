@@ -1,6 +1,5 @@
 package com.rva.dungeon.service.impl;
 
-import com.rva.dungeon.entity.Character;
 import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;

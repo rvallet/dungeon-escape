@@ -50,6 +50,7 @@ public enum ContentKey {
     POTION_TYPE_1("potion.type.1"),
     POTION_TYPE_2("potion.type.2"),
     POTION_TYPE_3("potion.type.3"),
+    POTION_TYPE_4("potion.type.4"),
 
     ROOM_NAME("room.name"),
     ROOM_DESCRIPTION("room.description"),
@@ -116,6 +117,7 @@ public enum ContentKey {
     COMMON_ROOM_DESC_EXIT("common.room.description.exit"),
     COMMON_ROOM_DESC_EMPTY("common.room.description.empty"),
 
+    COMMON_ITEM_LIFE_POTION_DESCRIPTION("common.item.life.potion.description"),
     COMMON_ITEM_HEALTH_POTION_DESCRIPTION("common.item.health.potion.description"),
     COMMON_ITEM_STRENGTH_POTION_DESCRIPTION("common.item.strength.potion.description"),
     COMMON_ITEM_DEFENSE_POTION_DESCRIPTION("common.item.defense.potion.description"),
@@ -123,6 +125,7 @@ public enum ContentKey {
     COMMON_ITEM_HEALTH_POTION_USED("common.item.health.potion.used"),
     COMMON_ITEM_STRENGTH_POTION_USED("common.item.strength.potion.used"),
     COMMON_ITEM_DEFENSE_POTION_USED("common.item.defense.potion.used"),
+    COMMON_ITEM_LIFE_POTION_USED("common.item.life.potion.used"),
 
     COMMON_COMMAND_ACTIONS("common.command.actions"),
     COMMON_COMMAND_UNKNOWN("common.command.unknown"),
