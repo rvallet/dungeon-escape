@@ -1,6 +1,5 @@
 package com.rva.dungeon.service.impl;
 
-import com.rva.dungeon.entity.Character;
 import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
@@ -133,6 +132,7 @@ public class GameServiceImpl implements GameService {
                      ConsoleUtils.RESET
         );
         ConsoleUtils.afficher(
+                true,
                 ConsoleUtils.YELLOW +
                      Action.getActionList(contentService) +
                      ConsoleUtils.RESET
@@ -374,24 +374,19 @@ public class GameServiceImpl implements GameService {
         }
 
         if (selectedEnemy != null) {
-            //ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.COMMON_FIGHT_START, selectedEnemy.getName()));
-            while (player.getIsAlive() && selectedEnemy.getIsAlive()) {
-                // Logique de combat (attaque du joueur puis de l'ennemi)
-                player.launchFight(selectedEnemy, contentService);
-            }
+            player.launchFight(selectedEnemy, contentService);
 
             if (!player.getIsAlive()) {
                 exitGame();
                 return;
             }
 
-                // Si l'ennemi est mort, on récupère son or
-                if (!selectedEnemy.getIsAlive() && selectedEnemy.getGold() > 0) {
+            if (!selectedEnemy.getIsAlive() && selectedEnemy.getGold() > 0) {
                     ConsoleUtils.afficher(true, ConsoleUtils.BRIGHT_YELLOW +
                             contentService.getFormattedString(ContentKey.COMMON_FIGHT_ENEMY_LOOT, player.getName(), selectedEnemy.getGold(), selectedEnemy.getName()));
                     player.setGold(player.getGold() + selectedEnemy.getGold());
                     selectedEnemy.setGold(0);
-                }
+            }
 
         } else {
             ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_FIGHT_NO_ENEMIES_ALIVE));

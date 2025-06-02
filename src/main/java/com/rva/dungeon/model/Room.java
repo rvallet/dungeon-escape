@@ -3,6 +3,7 @@ package com.rva.dungeon.model;
 import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.service.ContentService;
+import com.rva.dungeon.utils.console.ConsoleUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -150,9 +151,9 @@ public class Room {
                     .append(passage.getDirection().getNumber())
                     .append(" - ")
                     .append(passage.getDirection().getContent(contentService))
-                    .append("\n");
+                    .append(ConsoleUtils.RETOUR);
         }
-        passageList.deleteCharAt(passageList.length() - 1);
+        passageList.deleteCharAt(passageList.lastIndexOf(ConsoleUtils.RETOUR));
         return passageList.toString();
     }
 

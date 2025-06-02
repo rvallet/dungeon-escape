@@ -4,6 +4,7 @@ import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.enumerated.EnemyType;
 import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.model.Dungeon;
+import com.rva.dungeon.model.Item;
 import com.rva.dungeon.model.Passage;
 import com.rva.dungeon.model.Potion;
 import com.rva.dungeon.model.Room;
@@ -273,16 +274,28 @@ public class DungeonServiceImpl implements DungeonService {
 
 
     private void generateItems(List<Room> rooms, ContentService contentService) {
-        // TODO : Génération des objets
+        // TODO : Vérifier la génération des objets
+
+        int maxDungeonPosition = rooms.stream()
+                .mapToInt(Room::getDungeonPosition)
+                .max()
+                .orElse(0);
+
         rooms.forEach(room -> {
-            // Exemple de génération d'objets
-            if (RandomUtils.randomMax(10) < 3) { // 30% de chance d'avoir un objet
-                room.setItems(Arrays.asList(
-                        new Potion(PotionType.HEALTH, contentService),
-                        new Potion(PotionType.STRENGTH, contentService),
-                        new Potion(PotionType.DEFENSE, contentService)
-                        )
-                );
+            // Les salles les plus éloignées ont plus de chances d'avoir des objets.
+            if (RandomUtils.randomMax(maxDungeonPosition) <= room.getDungeonPosition()) {
+                // On génère un nombre aléatoire d'objets entre 1 et 5.
+                int numberOfItems = RandomUtils.randomBetween(1, Math.min(5, room.getDungeonPosition() + 1));
+
+                // Génération d'objets aléatoires
+                List<Item> items = new ArrayList<>();
+                for (int i = 0; i < numberOfItems; i++) {
+                    // On génère un objet de type Potion aléatoire
+                    PotionType potionType = PotionType.getRandomPotionType();
+                    items.add(new Potion(potionType, contentService));
+                }
+                // On ajoute les objets à la salle
+                room.setItems(items);
             } else {
                 room.setItems(new ArrayList<>());
             }

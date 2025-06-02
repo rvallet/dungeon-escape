@@ -7,6 +7,7 @@ import com.rva.dungeon.utils.content.ContentKey;
 public class Potion extends Item {
 
     private final PotionType potionType;
+    private int life;
     private int health;
     private int strength;
     private int defense;
@@ -14,6 +15,7 @@ public class Potion extends Item {
     public Potion(PotionType potionType, ContentService contentService) {
         super(potionType.getTypeName(contentService));
         this.potionType = potionType;
+        this.life = potionType.getLife();
         this.health = potionType.getHealth();
         this.strength = potionType.getStrength();
         this.defense = potionType.getDefense();
@@ -21,11 +23,20 @@ public class Potion extends Item {
             case HEALTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_DESCRIPTION, getHealth()));
             case STRENGTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_DESCRIPTION, getStrength()));
             case DEFENSE -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_DESCRIPTION, getDefense()));
+            case LIFE -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_DESCRIPTION, getLife()));
         }
     }
 
     public PotionType getPotionType() {
         return potionType;
+    }
+
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
     }
 
     public int getHealth() {
@@ -58,6 +69,7 @@ public class Potion extends Item {
             case HEALTH -> getName() + " (" + health + ")";
             case STRENGTH -> getName() + " (" + strength + ")";
             case DEFENSE -> getName() + " (" + defense + ")";
+            case LIFE -> getName() + " (" + life + ")";
         };
     }
 
