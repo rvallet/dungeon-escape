@@ -4,6 +4,7 @@ import com.rva.dungeon.model.Room;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.utils.console.ConsoleUtils;
 import com.rva.dungeon.utils.content.ContentKey;
+import com.rva.dungeon.utils.random.RandomUtils;
 
 public abstract class Character {
 
@@ -124,8 +125,16 @@ public abstract class Character {
             return;
         }
 
-        // Calcul des dégâts : attaque moins défense (pour le moment la défense n'est pas prise en compte)
-        int damage = this.attackPower; // - opponent.getDefensePower();
+        // Calcul des dégâts : entre 50% et 100% de la puissance d'attaque, moins 50% à 100% la puissance de défense de l'adversaire
+        int attackMin = Math.round((float) this.attackPower / 2);
+        int attackMax = this.attackPower;
+        int defenseMin = Math.round((float) opponent.getDefensePower() / 2);
+        int defenseMax = opponent.getDefensePower();
+
+        int attackValue = RandomUtils.randomBetween(attackMin, attackMax);
+        int defenseValue = RandomUtils.randomBetween(defenseMin, defenseMax);
+
+        int damage = Math.max(1, attackValue - defenseValue);
 
         // Réduire la santé de l'adversaire
         opponent.takeDamage(damage, contentService);
@@ -157,15 +166,30 @@ public abstract class Character {
             ConsoleUtils.afficher(msg);
             return;
         }
-        //String msg = contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName());
+
         ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW,
                 ConsoleUtils.RETOUR +  contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName()) + ConsoleUtils.RETOUR);
 
         while (this.getIsAlive() && opponent.getIsAlive()) {
-            this.fight(opponent, contentService);
+            // Si l'un des personnages est mort, on sort de la boucle
+            if (!this.getIsAlive() || !opponent.getIsAlive()) {
+                break;
+            }
+
+            // Le joueur attaque l'adversaire
+            if (this.getIsAlive() && opponent.getIsAlive()) {
+                this.fight(opponent, contentService);
+            } else {
+                break; // le joueur est mort, on sort
+            }
+
+            // L'adversaire attaque le joueur
             if (opponent.getIsAlive() && this.getIsAlive()) {
                 opponent.fight(this, contentService);
+            } else {
+                break; // l'adversaire est mort, on sort
             }
+
         }
 
     }

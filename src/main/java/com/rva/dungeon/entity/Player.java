@@ -91,10 +91,11 @@ public class Player extends Character {
                 case Potion potion -> {
                     switch (potion.getPotionType()) {
                         case HEALTH -> {
+                            int healAmount = Math.min(potion.getHealth(), getLife() - getHealth());
                             setHealth(Math.min(getHealth() + potion.getHealth(), getLife()));
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
-                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_USED, potion.getHealth())
+                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_USED, healAmount)
                             );
                             this.removeItemFromInventory(item);
                         }
