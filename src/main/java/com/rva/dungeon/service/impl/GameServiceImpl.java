@@ -73,7 +73,7 @@ public class GameServiceImpl implements GameService {
      * 3 : Difficile (51-100 salles)
      */
     private void choixDifficulte() {
-        ConsoleUtils.afficher(contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY));
+        ConsoleUtils.afficher(ConsoleUtils.RETOUR + contentService.getString(ContentKey.INIT_SELECT_DIFFICULTY));
         String choix = ConsoleUtils.demanderCouleur(ConsoleUtils.BRIGHT_MAGENTA, contentService.getString(ContentKey.INIT_SELECT_PROMPT));
         switch (choix){
             case "2":
@@ -168,26 +168,6 @@ public class GameServiceImpl implements GameService {
             );
         }
 
-        if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
-            ConsoleUtils.afficher(
-                    ConsoleUtils.YELLOW +
-                            contentService.getString(player.getCurrentRoom().hasAnyEnemyAlive() ?
-                                    ContentKey.COMMON_ROOM_ENEMIES_ALIVE : ContentKey.COMMON_ROOM_ENEMIES_DEAD) +
-                            ConsoleUtils.RESET
-            );
-            enemiesInCurrentRoom.forEach(enemy -> {
-                int index = enemiesInCurrentRoom.indexOf(enemy) + 1;
-                String enemyStatus = enemy.getIsAliveFormatedString(contentService);
-                ConsoleUtils.afficher(
-                        ConsoleUtils.YELLOW +
-                                index + " - " +
-                                enemy.getName() + ConsoleUtils.SPACE +
-                                ConsoleUtils.OPEN_PARENTHESIS + enemyStatus + ConsoleUtils.CLOSE_PARENTHESIS +
-                                ConsoleUtils.RESET
-                );
-            });
-        }
-
         if (!CollectionUtils.isEmpty(itemsInCurrentRoom)) {
             if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
                 ConsoleUtils.afficher(
@@ -226,6 +206,27 @@ public class GameServiceImpl implements GameService {
                 );
             }
         }
+
+        if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
+            ConsoleUtils.afficher(
+                    ConsoleUtils.YELLOW +
+                            contentService.getString(player.getCurrentRoom().hasAnyEnemyAlive() ?
+                                    ContentKey.COMMON_ROOM_ENEMIES_ALIVE : ContentKey.COMMON_ROOM_ENEMIES_DEAD) +
+                            ConsoleUtils.RESET
+            );
+            enemiesInCurrentRoom.forEach(enemy -> {
+                int index = enemiesInCurrentRoom.indexOf(enemy) + 1;
+                String enemyStatus = enemy.getIsAliveFormatedString(contentService);
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                index + " - " +
+                                enemy.getName() + ConsoleUtils.SPACE +
+                                ConsoleUtils.OPEN_PARENTHESIS + enemyStatus + ConsoleUtils.CLOSE_PARENTHESIS +
+                                ConsoleUtils.RESET
+                );
+            });
+        }
+
     }
 
     /**

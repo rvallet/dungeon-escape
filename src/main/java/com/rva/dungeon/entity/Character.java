@@ -55,7 +55,11 @@ public abstract class Character {
     }
 
     public void setHealth(int health) {
-        this.health = health;
+        if (health <= 0) {
+            health = 0; // Assure que la santé ne peut pas être négative
+            this.setIsAlive(false);
+        }
+        this.health = health ;
     }
 
     public int getAttackPower() {
@@ -137,27 +141,18 @@ public abstract class Character {
         int damage = Math.max(1, attackValue - defenseValue);
 
         // Réduire la santé de l'adversaire
-        opponent.takeDamage(damage, contentService);
-
-        // Affichage du résultat
-        if (opponent.getIsAlive()) {
-            String message = contentService.getString(ContentKey.COMMON_ATTACK_RESULT)
-                    .replace("%attacker%", this.getName())
-                    .replace("%defender%", opponent.getName())
-                    .replace("%damage%", String.valueOf(damage));
-            ConsoleUtils.afficher(message);
+        if (this.getIsAlive() && opponent.getIsAlive()) {
+                opponent.takeDamage(damage, contentService);
+                String message = contentService.getString(ContentKey.COMMON_ATTACK_RESULT)
+                        .replace("%attacker%", this.getName())
+                        .replace("%defender%", opponent.getName())
+                        .replace("%damage%", String.valueOf(damage));
+                ConsoleUtils.afficher(message);
         }
     }
 
     public void takeDamage(int damage, ContentService contentService) {
-        this.health -= damage;
-        if (this.health <= 0) {
-            this.health = 0;
-            this.setIsAlive(false);
-            String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
-                    .replace("%name%", this.getName());
-            ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
-        }
+        this.setHealth(this.getHealth() - damage);
     }
 
     public void launchFight(Character opponent, ContentService contentService) {
@@ -171,23 +166,33 @@ public abstract class Character {
                 ConsoleUtils.RETOUR +  contentService.getFormattedString(ContentKey.COMMON_FIGHT_LAUNCHED, this.getName(), opponent.getName()) + ConsoleUtils.RETOUR);
 
         while (this.getIsAlive() && opponent.getIsAlive()) {
-            // Si l'un des personnages est mort, on sort de la boucle
             if (!this.getIsAlive() || !opponent.getIsAlive()) {
-                break;
+                break; // sortie immédiate si quelqu'un est mort
             }
 
             // Le joueur attaque l'adversaire
             if (this.getIsAlive() && opponent.getIsAlive()) {
                 this.fight(opponent, contentService);
-            } else {
-                break; // le joueur est mort, on sort
+                if (!opponent.getIsAlive()) {
+                    String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
+                            .replace("%name%", opponent.getName());
+                    ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
+                    break; // sortie immédiate si l'adversaire est mort
+                }
+            }
+
+            if (!this.getIsAlive() || !opponent.getIsAlive()) {
+                break; // sortie immédiate si quelqu'un est mort
             }
 
             // L'adversaire attaque le joueur
             if (opponent.getIsAlive() && this.getIsAlive()) {
                 opponent.fight(this, contentService);
-            } else {
-                break; // l'adversaire est mort, on sort
+                if (!this.getIsAlive()) {
+                    String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
+                            .replace("%name%", this.getName());
+                    ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
+                }
             }
 
         }

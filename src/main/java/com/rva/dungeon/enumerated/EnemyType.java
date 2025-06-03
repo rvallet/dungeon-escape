@@ -5,10 +5,10 @@ import com.rva.dungeon.utils.content.ContentKey;
 
 public enum EnemyType {
 
-    ZOMBIE(1, ContentKey.ENEMY_TYPE_1, 50, 6, 2,5),
-    SKELETON(2, ContentKey.ENEMY_TYPE_2, 60, 12, 5, 20),
-    VAMPIRE(3, ContentKey.ENEMY_TYPE_3, 80, 25, 10, 50),
-    LICH(4, ContentKey.ENEMY_TYPE_4, 120, 35, 20,100);
+    ZOMBIE(1, ContentKey.ENEMY_TYPE_1, 40, 6, 0,5),
+    SKELETON(2, ContentKey.ENEMY_TYPE_2, 50, 12, 4, 20),
+    VAMPIRE(3, ContentKey.ENEMY_TYPE_3, 80, 25, 8, 50),
+    LICH(4, ContentKey.ENEMY_TYPE_4, 120, 35, 15,100);
 
     private final int number;
     private final ContentKey type;
