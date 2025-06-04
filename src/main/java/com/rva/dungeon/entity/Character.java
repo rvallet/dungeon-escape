@@ -142,12 +142,18 @@ public abstract class Character {
 
         // Réduire la santé de l'adversaire
         if (this.getIsAlive() && opponent.getIsAlive()) {
-                opponent.takeDamage(damage, contentService);
-                String message = contentService.getString(ContentKey.COMMON_ATTACK_RESULT)
-                        .replace("%attacker%", this.getName())
-                        .replace("%defender%", opponent.getName())
-                        .replace("%damage%", String.valueOf(damage));
-                ConsoleUtils.afficher(message);
+            boolean isPlayer = this instanceof Player;
+            opponent.takeDamage(damage, contentService);
+            ContentKey randomKey = ContentKey.getCommonAttackResultList().get(RandomUtils.randomMax(ContentKey.getCommonCharacterDeadList().size() - 1));
+            String message = contentService.getString(randomKey)
+                .replace("%attacker%", this.getName())
+                .replace("%defender%", opponent.getName())
+                .replace("%damage%", String.valueOf(damage));
+            ConsoleUtils.afficherCouleur(
+                    false,
+                    isPlayer ? ConsoleUtils.BOLD + ConsoleUtils.CYAN : ConsoleUtils.ITALIC + ConsoleUtils.BLUE,
+                    message
+            );
         }
     }
 
@@ -174,7 +180,8 @@ public abstract class Character {
             if (this.getIsAlive() && opponent.getIsAlive()) {
                 this.fight(opponent, contentService);
                 if (!opponent.getIsAlive()) {
-                    String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
+                    ContentKey randomKey = ContentKey.getCommonCharacterDeadList().get(RandomUtils.randomMax(ContentKey.getCommonCharacterDeadList().size() - 1));
+                    String msg = contentService.getString(randomKey)
                             .replace("%name%", opponent.getName());
                     ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
                     break; // sortie immédiate si l'adversaire est mort
@@ -189,7 +196,8 @@ public abstract class Character {
             if (opponent.getIsAlive() && this.getIsAlive()) {
                 opponent.fight(this, contentService);
                 if (!this.getIsAlive()) {
-                    String msg = contentService.getString(ContentKey.COMMON_CHARACTER_DEAD)
+                    ContentKey randomKey = ContentKey.getCommonCharacterDeadList().get(RandomUtils.randomMax(ContentKey.getCommonCharacterDeadList().size() - 1));
+                    String msg = contentService.getString(randomKey)
                             .replace("%name%", this.getName());
                     ConsoleUtils.afficherCouleur(false, ConsoleUtils.RED, msg);
                 }

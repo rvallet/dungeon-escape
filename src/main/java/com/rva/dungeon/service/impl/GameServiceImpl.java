@@ -402,10 +402,11 @@ public class GameServiceImpl implements GameService {
         }
 
         // Demander à l'utilisateur de choisir un objet dans l'inventaire
-        ConsoleUtils.afficherCouleur(ConsoleUtils.YELLOW, contentService.getString(ContentKey.PLAYER_INVENTORY_PROMPT) + ConsoleUtils.RETOUR);
+        ConsoleUtils.afficherCouleur(false, ConsoleUtils.YELLOW, contentService.getString(ContentKey.PLAYER_INVENTORY_PROMPT) + ConsoleUtils.RETOUR);
         for (int i = 0; i < player.getInventory().size(); i++) {
             Item item = player.getInventory().get(i);
             ConsoleUtils.afficher(
+                    true,
                     ConsoleUtils.YELLOW +
                             (i + 1) + " - " +
                             item.getName() + ConsoleUtils.SPACE +
