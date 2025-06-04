@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +73,7 @@ public class DungeonServiceImpl implements DungeonService {
      */
     private List<Room> generateRooms(int numberOfRooms, ContentService contentService) {
         List<Room> rooms = new ArrayList<>();
-        List<ContentKey> roomDescriptions = ContentKey.getRoomDescriptions();
+        List<ContentKey> roomDescriptions = ContentKey.getCommonRoomDescriptionList();
 
         for (int i = 0; i < numberOfRooms; i++) {
             // Obtention d'une description aléatoire
@@ -84,7 +83,7 @@ public class DungeonServiceImpl implements DungeonService {
             roomDescriptions.remove(randomIndex);
             // Si la liste est vide, on la réinitialise
             if (roomDescriptions.isEmpty()) {
-                roomDescriptions = ContentKey.getRoomDescriptions();
+                roomDescriptions = ContentKey.getCommonRoomDescriptionList();
             }
 
             Room room = new Room(

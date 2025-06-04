@@ -144,8 +144,43 @@ public enum ContentKey {
     COMMON_FIGHT_NO_ENEMIES_ALIVE("common.fight.no.enemies.alive"),
     COMMON_FIGHT_ENEMY_DEAD("common.fight.enemy.dead"),
     COMMON_FIGHT_ENEMY_LOOT("common.fight.enemy.loot"),
-    COMMON_ATTACK_RESULT("common.attack.result"),
-    COMMON_CHARACTER_DEAD("common.character.dead"),
+    COMMON_ATTACK_RESULT_1("common.attack.result.1"),
+    COMMON_ATTACK_RESULT_2("common.attack.result.2"),
+    COMMON_ATTACK_RESULT_3("common.attack.result.3"),
+    COMMON_ATTACK_RESULT_4("common.attack.result.4"),
+    COMMON_ATTACK_RESULT_5("common.attack.result.5"),
+    COMMON_ATTACK_RESULT_6("common.attack.result.6"),
+    COMMON_ATTACK_RESULT_7("common.attack.result.7"),
+    COMMON_ATTACK_RESULT_8("common.attack.result.8"),
+    COMMON_ATTACK_RESULT_9("common.attack.result.9"),
+    COMMON_ATTACK_RESULT_10("common.attack.result.10"),
+    COMMON_ATTACK_RESULT_11("common.attack.result.11"),
+    COMMON_ATTACK_RESULT_12("common.attack.result.12"),
+    COMMON_ATTACK_RESULT_13("common.attack.result.13"),
+    COMMON_ATTACK_RESULT_14("common.attack.result.14"),
+    COMMON_ATTACK_RESULT_15("common.attack.result.15"),
+    COMMON_ATTACK_RESULT_16("common.attack.result.16"),
+    COMMON_ATTACK_RESULT_17("common.attack.result.17"),
+    COMMON_ATTACK_RESULT_18("common.attack.result.18"),
+    COMMON_ATTACK_RESULT_19("common.attack.result.19"),
+    COMMON_ATTACK_RESULT_20("common.attack.result.20"),
+
+    COMMON_CHARACTER_DEAD_1("common.character.dead.1"),
+    COMMON_CHARACTER_DEAD_2("common.character.dead.2"),
+    COMMON_CHARACTER_DEAD_3("common.character.dead.3"),
+    COMMON_CHARACTER_DEAD_4("common.character.dead.4"),
+    COMMON_CHARACTER_DEAD_5("common.character.dead.5"),
+    COMMON_CHARACTER_DEAD_6("common.character.dead.6"),
+    COMMON_CHARACTER_DEAD_7("common.character.dead.7"),
+    COMMON_CHARACTER_DEAD_8("common.character.dead.8"),
+    COMMON_CHARACTER_DEAD_9("common.character.dead.9"),
+    COMMON_CHARACTER_DEAD_10("common.character.dead.10"),
+    COMMON_CHARACTER_DEAD_11("common.character.dead.11"),
+    COMMON_CHARACTER_DEAD_12("common.character.dead.12"),
+    COMMON_CHARACTER_DEAD_13("common.character.dead.13"),
+    COMMON_CHARACTER_DEAD_14("common.character.dead.14"),
+    COMMON_CHARACTER_DEAD_15("common.character.dead.15"),
+
     COMMON_CHARACTER_DEFEAT("common.character.defeat"),
 
     DUNGEON_EXPLORE("dungeon.explore"),
@@ -174,7 +209,7 @@ public enum ContentKey {
         return key;
     }
 
-    public static List<ContentKey> getRoomDescriptions() {
+    public static List<ContentKey> getCommonRoomDescriptionList() {
         List<ContentKey> roomDescriptions = new ArrayList<>();
         for (ContentKey contentKey : ContentKey.values()) {
             if (contentKey.name().startsWith("COMMON_ROOM_DESCRIPTION_")) {
@@ -182,6 +217,26 @@ public enum ContentKey {
             }
         }
         return roomDescriptions;
+    }
+
+    public static List<ContentKey> getCommonCharacterDeadList() {
+        List<ContentKey> commonCharacterDead = new ArrayList<>();
+        for (ContentKey contentKey : ContentKey.values()) {
+            if (contentKey.name().startsWith("COMMON_CHARACTER_DEAD_")) {
+                commonCharacterDead.add(contentKey);
+            }
+        }
+        return commonCharacterDead;
+    }
+
+    public static List<ContentKey> getCommonAttackResultList() {
+        List<ContentKey> commonAttackResults = new ArrayList<>();
+        for (ContentKey contentKey : ContentKey.values()) {
+            if (contentKey.name().startsWith("COMMON_ATTACK_RESULT_")) {
+                commonAttackResults.add(contentKey);
+            }
+        }
+        return commonAttackResults;
     }
 
 }
