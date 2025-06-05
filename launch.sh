@@ -51,9 +51,9 @@ if [ -f "pom.xml" ]; then
   # Récupération de la version du pom.xml
   POM_VERSION=$(grep -A5 "<groupId>com.rva</groupId>" pom.xml | grep "<version>" | sed -E 's/.*<version>([^<]*)<\/version>.*/\1/')
 
-  # Nettoyer en enlevant les espaces superflus
-  JAR_VERSION=$(echo "$JAR_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//')
-  POM_VERSION=$(echo "$POM_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//')
+  # Nettoyer versions pour supprimer espace, tab, retour chariot
+  JAR_VERSION=$(echo "$JAR_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//;s/[\r\n]//g')
+  POM_VERSION=$(echo "$POM_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//;s/[\r\n]//g')
   debug_echo "Version du jar : $JAR_VERSION (len=${#JAR_VERSION})"
   debug_echo "Version du pom.xml : $POM_VERSION (len=${#POM_VERSION})"
 
