@@ -184,9 +184,7 @@ public class DungeonServiceImpl implements DungeonService {
      */
     private void generateExit(List<Room> rooms, ContentService contentService) {
         // On retire les salles qui n'ont pas de passages ou qui n'ont pas de position
-        rooms = rooms.stream()
-                .filter(room -> !room.getPassages().isEmpty())
-                .toList();
+        rooms.removeIf(room -> room.getPassages().isEmpty());
         logger.info("Dungeon created with {} rooms", rooms.size());
 
         // Chercher la position la plus grande
@@ -325,9 +323,15 @@ public class DungeonServiceImpl implements DungeonService {
             }
         }
 
-        // Si une liche est présente dans la liste sur une position inférieure à 10, on ne conserve que la liche
+        // Si des liches sont présentes dans la liste sur une position inférieure à 10, on ne conserve que les liches
         if (dungeonPosition < 10 && enemies.stream().anyMatch(e -> e.enemyType == EnemyType.LICH)) {
+            // On ne garde que les liches pour les positions inférieures à 10.
             enemies.removeIf(e -> e.enemyType != EnemyType.LICH);
+            if (dungeonPosition < 7 && enemies.size() > 1) {
+                // On limite à une seule liche pour les positions inférieures à 7.
+                enemies.subList(1, enemies.size()).clear();
+            }
+
         }
 
         return enemies;
@@ -366,14 +370,14 @@ public class DungeonServiceImpl implements DungeonService {
             case 0, 1 -> {
                 return Collections.emptyList(); // Pas d'ennemis
             }
-            case 2, 3, 4, 5 -> {
+            case 2, 3, 4 -> {
                 return List.of(EnemyType.ZOMBIE, EnemyType.SKELETON);
             }
-            case 6, 7, 8, 9 -> {
-                return List.of(EnemyType.ZOMBIE, EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.LICH);
+            case 5, 6, 7 -> {
+                return List.of(EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.LICH);
             }
             default -> {
-                return List.of(EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.LICH);
+                return List.of(EnemyType.VAMPIRE, EnemyType.LICH);
             }
         }
 
