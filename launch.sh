@@ -48,12 +48,14 @@ if [ -f "pom.xml" ]; then
     exit 1
   fi
 
-  debug_echo "Version du jar : $JAR_VERSION"
-
   # Récupération de la version du pom.xml
   POM_VERSION=$(grep -A5 "<groupId>com.rva</groupId>" pom.xml | grep "<version>" | sed -E 's/.*<version>([^<]*)<\/version>.*/\1/')
 
-  debug_echo "Version du pom.xml : $POM_VERSION"
+  # Nettoyer en enlevant les espaces superflus
+  JAR_VERSION=$(echo "$JAR_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//')
+  POM_VERSION=$(echo "$POM_VERSION" | sed 's/^[ \t]*//;s/[ \t]*$//')
+  debug_echo "Version du jar : $JAR_VERSION (len=${#JAR_VERSION})"
+  debug_echo "Version du pom.xml : $POM_VERSION (len=${#POM_VERSION})"
 
   # Vérification des versions
   if [ "$JAR_VERSION" != "$POM_VERSION" ]; then
