@@ -8,6 +8,7 @@ import com.rva.dungeon.utils.content.ContentKey;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Player extends Character {

@@ -25,4 +25,17 @@ public class RandomUtils {
         return max > 0 ? rand.nextInt(max + 1) : 0;
     }
 
+    /**
+     * Ajuste une valeur par un pourcentage aléatoire.
+     * @param value La valeur de base à ajuster.
+     * @param percentage Le pourcentage d'ajustement (peut être négatif).
+     * @return La valeur ajustée.
+     */
+    public static int adjustByPercentage(int value, int percentage) {
+        double variation = percentage / 100.0;
+        double randFactor = (rand.nextDouble() * 2 - 1) * variation;
+        double adjustedValue = value * (1 + randFactor);
+        return (int) Math.round(adjustedValue);
+    }
+
 }

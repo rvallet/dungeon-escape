@@ -30,12 +30,12 @@ public class ConsoleUtils {
     public static final String YELLOW = "\u001b[33m";
     public static final String MAGENTA = "\u001b[35m";
     public static final String GREEN = "\u001b[32m";
-    public static final String BLUE = "\u001b[34m";
     public static final String CYAN = "\u001b[36m";
 
     // Couleurs claires / brillantes
     public static final String BRIGHT_YELLOW = "\u001b[33;1m";
     public static final String BRIGHT_MAGENTA = "\u001b[35;1m";
+    public static final String BRIGHT_BLUE = "\u001b[34;1m";
 
     // Effets supplémentaires
     public static final String BOLD = "\u001b[1m";

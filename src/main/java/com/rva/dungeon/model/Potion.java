@@ -3,6 +3,7 @@ package com.rva.dungeon.model;
 import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.utils.content.ContentKey;
+import com.rva.dungeon.utils.random.RandomUtils;
 
 public class Potion extends Item {
 
@@ -15,10 +16,11 @@ public class Potion extends Item {
     public Potion(PotionType potionType, ContentService contentService) {
         super(potionType.getTypeName(contentService));
         this.potionType = potionType;
-        this.life = potionType.getLife();
-        this.health = potionType.getHealth();
-        this.strength = potionType.getStrength();
-        this.defense = potionType.getDefense();
+        // Adjust the potion attributes by a percentage to add variability
+        this.life = RandomUtils.adjustByPercentage(potionType.getLife(), 25);
+        this.health = RandomUtils.adjustByPercentage(potionType.getHealth(), 25);
+        this.strength = RandomUtils.adjustByPercentage(potionType.getStrength(), 40);
+        this.defense = RandomUtils.adjustByPercentage(potionType.getDefense(), 40);
         switch (potionType) {
             case HEALTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_DESCRIPTION, getHealth()));
             case STRENGTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_DESCRIPTION, getStrength()));

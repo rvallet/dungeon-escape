@@ -12,7 +12,7 @@ public abstract class Character {
     private int life = 100;
     private int health = 100;
     private int attackPower = 10;
-    private int defensePower = 5;
+    private int defensePower = 2;
     private int level = 1;
     private int experiencePoints = 0;
     private int gold = 0;
@@ -143,7 +143,7 @@ public abstract class Character {
         // Réduire la santé de l'adversaire
         if (this.getIsAlive() && opponent.getIsAlive()) {
             boolean isPlayer = this instanceof Player;
-            opponent.takeDamage(damage, contentService);
+            opponent.setHealth(opponent.getHealth() - damage);
             ContentKey randomKey = ContentKey.getCommonAttackResultList().get(RandomUtils.randomMax(ContentKey.getCommonCharacterDeadList().size() - 1));
             String message = contentService.getString(randomKey)
                 .replace("%attacker%", this.getName())
@@ -151,14 +151,10 @@ public abstract class Character {
                 .replace("%damage%", String.valueOf(damage));
             ConsoleUtils.afficherCouleur(
                     false,
-                    isPlayer ? ConsoleUtils.BOLD + ConsoleUtils.CYAN : ConsoleUtils.ITALIC + ConsoleUtils.BLUE,
+                    isPlayer ? ConsoleUtils.BOLD + ConsoleUtils.CYAN : ConsoleUtils.ITALIC + ConsoleUtils.BRIGHT_BLUE,
                     message
             );
         }
-    }
-
-    public void takeDamage(int damage, ContentService contentService) {
-        this.setHealth(this.getHealth() - damage);
     }
 
     public void launchFight(Character opponent, ContentService contentService) {
