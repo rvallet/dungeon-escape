@@ -4,8 +4,10 @@ import com.rva.dungeon.entity.Enemy;
 import com.rva.dungeon.entity.Player;
 import com.rva.dungeon.enumerated.Action;
 import com.rva.dungeon.enumerated.Direction;
+import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.model.Dungeon;
 import com.rva.dungeon.model.Item;
+import com.rva.dungeon.model.Potion;
 import com.rva.dungeon.model.Room;
 import com.rva.dungeon.service.ContentService;
 import com.rva.dungeon.service.GameService;
@@ -15,6 +17,7 @@ import com.rva.dungeon.utils.random.RandomUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -102,6 +105,14 @@ public class GameServiceImpl implements GameService {
     private void demanderNomJoueur() {
         String playerName = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_QUERY_PLAYER_NAME));
         player = new Player(playerName);
+
+        // On initialise le joueur avec un donjon et 2 potions de santé
+        List<Item> items = Arrays.asList(
+                new Potion(PotionType.HEALTH, contentService),
+                new Potion(PotionType.HEALTH, contentService)
+        );
+        player.addItemsToInventory(items);
+
     }
 
     /**

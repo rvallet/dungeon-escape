@@ -10,7 +10,7 @@ public enum PotionType {
 
     HEALTH(ContentKey.POTION_TYPE_1, 25, 0, 0, 0),
     STRENGTH(ContentKey.POTION_TYPE_2, 0, 5, 0, 0),
-    DEFENSE(ContentKey.POTION_TYPE_3, 0, 0, 5, 0),
+    DEFENSE(ContentKey.POTION_TYPE_3, 0, 0, 3, 0),
     LIFE(ContentKey.POTION_TYPE_4, 0, 0, 0, 10);
 
     private final ContentKey type;
