@@ -92,8 +92,8 @@ public class Player extends Character {
                 case Potion potion -> {
                     switch (potion.getPotionType()) {
                         case HEALTH -> {
-                            int healAmount = Math.min(potion.getHealth(), getLife() - getHealth());
-                            setHealth(Math.min(getHealth() + potion.getHealth(), getLife()));
+                            int healAmount = Math.min(potion.getAmount(), getLife() - getHealth());
+                            setHealth(Math.min(getHealth() + potion.getAmount(), getLife()));
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
                                     contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_USED, healAmount)
@@ -101,27 +101,27 @@ public class Player extends Character {
                             this.removeItemFromInventory(item);
                         }
                         case STRENGTH -> {
-                            setAttackPower(getAttackPower() + potion.getStrength());
+                            setAttackPower(getAttackPower() + potion.getAmount());
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
-                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_USED, potion.getStrength())
+                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_USED, potion.getAmount())
                             );
                             this.removeItemFromInventory(item);
                         }
                         case DEFENSE -> {
-                            setDefensePower(getDefensePower() + potion.getDefense());
+                            setDefensePower(getDefensePower() + potion.getAmount());
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
-                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_USED, potion.getDefense())
+                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_USED, potion.getAmount())
                             );
                             this.removeItemFromInventory(item);
                         }
                         case LIFE -> {
-                            setLife(getLife() + potion.getLife());
-                            setHealth(getHealth() + potion.getLife());
+                            setLife(getLife() + potion.getAmount());
+                            setHealth(getHealth() + potion.getAmount());
                             ConsoleUtils.afficherCouleur(
                                     ConsoleUtils.BRIGHT_YELLOW,
-                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_USED, potion.getLife())
+                                    contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_USED, potion.getAmount())
                             );
                             this.removeItemFromInventory(item);
                         }
