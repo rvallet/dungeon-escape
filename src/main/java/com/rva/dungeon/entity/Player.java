@@ -1,5 +1,6 @@
 package com.rva.dungeon.entity;
 
+import com.rva.dungeon.model.EncounterCharacter;
 import com.rva.dungeon.model.Item;
 import com.rva.dungeon.model.Potion;
 import com.rva.dungeon.service.ContentService;
@@ -8,7 +9,6 @@ import com.rva.dungeon.utils.content.ContentKey;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Player extends Character {
@@ -71,12 +71,27 @@ public class Player extends Character {
         this.inventory = inventory;
     }
 
-    public void addItemsToInventory(List<Item> items) {
-        if (inventory != null) {
-            inventory.addAll(items);
-        } else {
-            inventory = new ArrayList<>(items);
+    public void addPotionsToInventory(List<Item> items) {
+        // Si la liste est vide, on ne fait rien.
+        if (CollectionUtils.isEmpty(items)) {
+            return;
         }
+
+        // On filtre les potions et on les ajoute à l'inventaire.
+        List<Item> potions = new ArrayList<>(items.stream().filter(item -> item instanceof Potion).toList());
+
+        // Si la liste de potions est vide, on ne fait rien.
+        if (CollectionUtils.isEmpty(potions)) {
+            return;
+        }
+
+        // Si l'inventaire est déjà initialisé, on ajoute les potions.
+        if (inventory != null) {
+            inventory.addAll(potions);
+        } else {
+            inventory = new ArrayList<>(potions);
+        }
+
     }
 
     public void removeItemFromInventory(Item item) {
@@ -87,7 +102,6 @@ public class Player extends Character {
 
     public void useItemFromInventory(Item item, ContentService contentService) {
         if (inventory != null && inventory.contains(item)) {
-            // TODO : use the item
             switch (item) {
                 case Potion potion -> {
                     switch (potion.getPotionType()) {
@@ -127,7 +141,11 @@ public class Player extends Character {
                         }
                     }
                 }
-                // Add more item types as needed
+                // Non utilisés pour l'instant.
+                case EncounterCharacter encounterCharacter -> {
+                    encounterCharacter.interact(this, contentService);
+                }
+                // TODO : Ajouter d'autres types d'items si nécessaire.
                 default -> throw new IllegalStateException("Unexpected value: " + item);
             }
             removeItemFromInventory(item);

@@ -1,9 +1,11 @@
 package com.rva.dungeon.service.impl;
 
 import com.rva.dungeon.entity.Enemy;
+import com.rva.dungeon.enumerated.EncounterCharacterType;
 import com.rva.dungeon.enumerated.EnemyType;
 import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.model.Dungeon;
+import com.rva.dungeon.model.EncounterCharacter;
 import com.rva.dungeon.model.Item;
 import com.rva.dungeon.model.Passage;
 import com.rva.dungeon.model.Potion;
@@ -51,11 +53,9 @@ public class DungeonServiceImpl implements DungeonService {
         generateExit(rooms, contentService);
 
         // Génération des enemies
-        // TODO : Génération des ennemis
         generateEnemies(rooms, contentService);
 
         // Génération des objets
-        // TODO : Génération des objets
         generateItems(rooms, contentService);
 
         // Ajout des salles au donjon
@@ -269,10 +269,13 @@ public class DungeonServiceImpl implements DungeonService {
         });
     }
 
-
+    /**
+     * Génère des objets aléatoires dans chaque salle du donjon.
+     * @param rooms - Liste des salles du donjon
+     * @param contentService - Service de contenu pour obtenir les descriptions des objets dans la langue du joueur
+     */
     private void generateItems(List<Room> rooms, ContentService contentService) {
-        // TODO : Vérifier la génération des objets
-
+        // On calcule la position maximale dans le donjon pour pondérer la génération d'objets
         int maxDungeonPosition = rooms.stream()
                 .mapToInt(Room::getDungeonPosition)
                 .max()
@@ -290,6 +293,15 @@ public class DungeonServiceImpl implements DungeonService {
                     // On génère un objet de type Potion aléatoire
                     PotionType potionType = PotionType.getRandomPotionType();
                     items.add(new Potion(potionType, contentService));
+
+                    // On ajoute un unique objet de type EncounterCharacter
+                    boolean hasEncounterCharacter = items.stream()
+                            .anyMatch(item -> item instanceof EncounterCharacter);
+                    boolean randomChance = RandomUtils.randomMax(100) < 100; // 100% de chance d'avoir un EncounterCharacter
+                    if (!hasEncounterCharacter && randomChance) {
+                        EncounterCharacterType encounterCharacterType = EncounterCharacterType.getRandomEncounterCharacterType();
+                        items.add(new EncounterCharacter(encounterCharacterType, contentService));
+                    }
                 }
                 // On ajoute les objets à la salle
                 room.setItems(items);

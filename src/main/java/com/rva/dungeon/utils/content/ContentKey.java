@@ -61,6 +61,9 @@ public enum ContentKey {
     COMMON_GREETING("common.greeting"),
     COMMON_GOODBYE("common.goodbye"),
     COMMON_PROMPT("common.prompt"),
+    COMMON_ANSWER_YES("common.answer.yes"),
+    COMMON_ANSWER_NO("common.answer.no"),
+    COMMON_ANSWER_ERROR("common.answer.error"),
 
     COMMON_ROOM_MOVE_INTO("common.room.move.into"),
     COMMON_ROOM_MOVE_OUT("common.room.move.out"),
@@ -196,7 +199,23 @@ public enum ContentKey {
     DUNGEON_DEBUG_ENEMIES("dungeon.debug.enemies"),
     DUNGEON_DEBUG_ITEMS("dungeon.debug.items"),
     DUNGEON_DEBUG_EXIT("dungeon.debug.exit"),
-    DUNGEON_DEBUG_PASSAGES("dungeon.debug.passages"),;
+    DUNGEON_DEBUG_PASSAGES("dungeon.debug.passages"),
+
+    ENCOUNTER_CHARACTER_TYPE_BEGGAR("encounter.character.type.beggar"),
+    ENCOUNTER_CHARACTER_DESCRIPTION_BEGGAR("encounter.character.description.beggar"),
+    ENCOUNTER_CHARACTER_TYPE_MERCHANT("encounter.character.type.merchant"),
+    ENCOUNTER_CHARACTER_DESCRIPTION_MERCHANT("encounter.character.description.merchant"),
+    ENCOUNTER_CHARACTER_TYPE_HEALER("encounter.character.type.healer"),
+    ENCOUNTER_CHARACTER_DESCRIPTION_HEALER("encounter.character.description.healer"),
+    ENCOUNTER_CHARACTER_TYPE_WIZARD("encounter.character.type.wizard"),
+    ENCOUNTER_CHARACTER_DESCRIPTION_WIZARD("encounter.character.description.wizard"),
+    ENCOUNTER_CHARACTER_QUESTION("encounter.character.question"),
+    ENCOUNTER_CHARACTER_ANSWER_YES("encounter.character.answer.yes"),
+    ENCOUNTER_CHARACTER_ANSWER_NO("encounter.character.answer.no"),
+    ENCOUNTER_CHARACTER_NOT_ENOUGH_GOLD("encounter.character.not.enough.gold"),
+    ENCOUNTER_CHARACTER_VANISHED("encounter.character.vanished"),
+
+    ;
 
     private final String key;
 

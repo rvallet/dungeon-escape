@@ -6,6 +6,7 @@ import com.rva.dungeon.enumerated.Action;
 import com.rva.dungeon.enumerated.Direction;
 import com.rva.dungeon.enumerated.PotionType;
 import com.rva.dungeon.model.Dungeon;
+import com.rva.dungeon.model.EncounterCharacter;
 import com.rva.dungeon.model.Item;
 import com.rva.dungeon.model.Potion;
 import com.rva.dungeon.model.Room;
@@ -17,6 +18,7 @@ import com.rva.dungeon.utils.random.RandomUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -111,7 +113,7 @@ public class GameServiceImpl implements GameService {
                 new Potion(PotionType.HEALTH, contentService),
                 new Potion(PotionType.HEALTH, contentService)
         );
-        player.addItemsToInventory(items);
+        player.addPotionsToInventory(items);
 
     }
 
@@ -168,8 +170,8 @@ public class GameServiceImpl implements GameService {
         List<Enemy> enemiesInCurrentRoom = player.getCurrentRoom().getEnemies();
         List<Item> itemsInCurrentRoom = player.getCurrentRoom().getItems();
 
+        // Si la salle est vide, on affiche un message d'information
         if (CollectionUtils.isEmpty(enemiesInCurrentRoom) && CollectionUtils.isEmpty(itemsInCurrentRoom)) {
-            // Si la salle est vide, on affiche un message d'information
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
                             contentService.getString(ContentKey.COMMON_ROOM_DESC_EMPTY) +
@@ -179,34 +181,62 @@ public class GameServiceImpl implements GameService {
             );
         }
 
+        // Si la salle contient des items :
         if (!CollectionUtils.isEmpty(itemsInCurrentRoom)) {
+            boolean hasPotionItem = itemsInCurrentRoom.stream()
+                    .anyMatch(item -> item instanceof Potion);
+            boolean hasEncounterCharacterItem = itemsInCurrentRoom.stream()
+                    .anyMatch(item -> item instanceof EncounterCharacter);
+
+            // Si la salle ne contient pas d'ennemis vivants, on affiche les items
             if (!player.getCurrentRoom().hasAnyEnemyAlive()) {
-                ConsoleUtils.afficher(
-                        ConsoleUtils.YELLOW +
-                                contentService.getString(ContentKey.COMMON_ROOM_ITEMS) +
-                                ConsoleUtils.RESET
-                );
-                itemsInCurrentRoom.forEach(item -> {
-                    int index = itemsInCurrentRoom.indexOf(item) + 1;
+
+                // Si la salle contient des personnages, on lance l'interaction en premier lieu
+                if (hasEncounterCharacterItem) {
+                    List<Item> itemsToRemove = new ArrayList<>();
+                    for (Item item : itemsInCurrentRoom) {
+                        if (item instanceof EncounterCharacter encounterCharacter) {
+                            encounterCharacter.interact(player, contentService);
+                            itemsToRemove.add(item);
+                        }
+                    }
+                    // On retire l'item de la salle après l'interaction
+                    player.getCurrentRoom().getItems().removeAll(itemsToRemove);
+                }
+
+                // Si la salle contient des potions, on les affiche
+                if (hasPotionItem) {
                     ConsoleUtils.afficher(
                             ConsoleUtils.YELLOW +
-                                    index + " - " +
-                                    item.getName() + ConsoleUtils.SPACE +
-                                    ConsoleUtils.OPEN_PARENTHESIS + item.getDescription() + ConsoleUtils.CLOSE_PARENTHESIS +
+                                    contentService.getString(ContentKey.COMMON_ROOM_ITEMS) +
                                     ConsoleUtils.RESET
                     );
-                });
 
-                // On ajoute les items à l'inventaire du joueur
-                ConsoleUtils.afficher(
-                        ConsoleUtils.YELLOW +
-                                contentService.getString(ContentKey.COMMON_ROOM_ITEMS_ADDED) +
-                                ConsoleUtils.RETOUR
-                );
-                player.addItemsToInventory(itemsInCurrentRoom);
+                    for (Item item : itemsInCurrentRoom) {
+                        if (item instanceof Potion potion) {
+                            int index = itemsInCurrentRoom.indexOf(item) + 1;
+                            ConsoleUtils.afficher(
+                                    ConsoleUtils.YELLOW +
+                                            index + " - " +
+                                            item.getName() + ConsoleUtils.SPACE +
+                                            ConsoleUtils.OPEN_PARENTHESIS + item.getDescription() + ConsoleUtils.CLOSE_PARENTHESIS +
+                                            ConsoleUtils.RESET
+                            );
+                        }
+                    }
 
-                // On vide la liste des items de la salle
-                player.getCurrentRoom().setItems(null);
+                    // On ajoute les items à l'inventaire du joueur
+                    ConsoleUtils.afficher(
+                            ConsoleUtils.YELLOW +
+                                    contentService.getString(ContentKey.COMMON_ROOM_ITEMS_ADDED) +
+                                    ConsoleUtils.RETOUR
+                    );
+                    player.addPotionsToInventory(itemsInCurrentRoom);
+
+                    // On vide la liste des items de la salle
+                    player.getCurrentRoom().setItems(null);
+
+                }
 
             } else {
                 // Si des ennemis sont présents, on n'affiche pas les items
@@ -218,6 +248,7 @@ public class GameServiceImpl implements GameService {
             }
         }
 
+        // Si la salle contient des ennemis, on les affiche
         if (!CollectionUtils.isEmpty(enemiesInCurrentRoom)) {
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
@@ -241,8 +272,8 @@ public class GameServiceImpl implements GameService {
     }
 
     /**
-     * Affiche les salles du donjon, leur position et les passages
-     * Pour le debug du donjon
+     * Affiche les salles du donjon, leur position, la liste des adversaires et potions ainsi que les passages.
+     * Permet de visualiser rapidement la structure du donjon pour le débogage, particulière pour équilibrer la génération aléatoire.
      */
     private void explorerDonjon() {
         dungeon.getRooms().forEach(room -> {
@@ -272,6 +303,9 @@ public class GameServiceImpl implements GameService {
 
     /**
      * Choisit une direction pour se déplacer dans le donjon
+     * Affiche les directions disponibles dans la salle actuelle
+     * Si la direction est valide, déplace le joueur dans la salle correspondante
+     * Si la salle est une sortie, termine le jeu
      */
     private void choisirDirection() {
         String directions = Room.displayFormatedAvailableDirections(
