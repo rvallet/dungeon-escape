@@ -8,12 +8,14 @@ import com.rva.dungeon.utils.console.ConsoleUtils;
 import com.rva.dungeon.utils.content.ContentKey;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EncounterCharacter extends Item {
 
     private EncounterCharacterType encounterCharacterType;
     private int price;
     private List<Item> items;
+    private boolean isInteracted = false;
 
     public EncounterCharacter(EncounterCharacterType encounterCharacterType, ContentService contentService) {
         super();
@@ -57,10 +59,13 @@ public class EncounterCharacter extends Item {
     }
 
     public void interact(Player player, ContentService contentService) {
-        //TODO : Gestion de l'interaction -> rencontre, choix et transaction
-        ConsoleUtils.afficher(this.getDescription());
+
+        if (!isInteracted) {
+            ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, this.getDescription());
+        }
+
         String response = ConsoleUtils.demanderCouleur(
-                ConsoleUtils.BRIGHT_YELLOW,
+                ConsoleUtils.BRIGHT_MAGENTA,
                 contentService.getString(ContentKey.ENCOUNTER_CHARACTER_QUESTION),
                 this.price
         );
@@ -68,17 +73,21 @@ public class EncounterCharacter extends Item {
         if (response.equalsIgnoreCase(contentService.getString(ContentKey.COMMON_ANSWER_YES))) {
             if (player.getGold() >= price) {
                 buyItems(player);
-                ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_ANSWER_YES));
-                ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED));
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_ANSWER_YES), getPrice());
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_REWARD), getItemsToFormat());
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED) + ConsoleUtils.RETOUR);
             } else {
-                ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_NOT_ENOUGH_GOLD));
-                ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED));
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_NOT_ENOUGH_GOLD));
+                ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED) + ConsoleUtils.RETOUR);
             }
         } else if (response.equalsIgnoreCase(contentService.getString(ContentKey.COMMON_ANSWER_NO))) {
-            ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_ANSWER_NO));
-            ConsoleUtils.afficher(contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED));
+            ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_ANSWER_NO));
+            ConsoleUtils.afficherCouleur(false, ConsoleUtils.BRIGHT_YELLOW, contentService.getString(ContentKey.ENCOUNTER_CHARACTER_VANISHED) + ConsoleUtils.RETOUR);
         } else {
-            ConsoleUtils.afficher(contentService.getString(ContentKey.COMMON_ANSWER_ERROR));
+            ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_ANSWER_ERROR) + ConsoleUtils.RETOUR);
+            // Appel récursif tant que l'utilisateur ne répond pas correctement
+            this.isInteracted = true;
+            interact(player, contentService);
         }
 
     }
@@ -106,6 +115,12 @@ public class EncounterCharacter extends Item {
 
     public List<Item> getItems() {
         return items;
+    }
+
+    public String getItemsToFormat() {
+        return items.stream()
+                .map(item -> "- " + item.getName() + " (" + item.getDescription() + ")")
+                .collect(Collectors.joining(ConsoleUtils.RETOUR));
     }
 
     public void setItems(List<Item> items) {

@@ -15,7 +15,7 @@ public abstract class Character {
     private int defensePower = 2;
     private int level = 1;
     private int experiencePoints = 0;
-    private int gold = 25;
+    private int gold = 250;
     private boolean isAlive = true;
     private Room currentRoom;
 

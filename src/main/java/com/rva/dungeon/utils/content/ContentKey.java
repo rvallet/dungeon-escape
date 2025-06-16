@@ -214,6 +214,7 @@ public enum ContentKey {
     ENCOUNTER_CHARACTER_ANSWER_NO("encounter.character.answer.no"),
     ENCOUNTER_CHARACTER_NOT_ENOUGH_GOLD("encounter.character.not.enough.gold"),
     ENCOUNTER_CHARACTER_VANISHED("encounter.character.vanished"),
+    ENCOUNTER_CHARACTER_REWARD("encounter.character.reward"),
 
     ;
 

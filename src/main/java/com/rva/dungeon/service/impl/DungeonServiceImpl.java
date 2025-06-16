@@ -27,7 +27,7 @@ import java.util.Queue;
 
 public class DungeonServiceImpl implements DungeonService {
 
-    private Logger logger = LoggerFactory.getLogger(DungeonServiceImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(DungeonServiceImpl.class);
 
     /**
      * Génère un donjon avec un nombre de salles spécifié.
@@ -271,42 +271,57 @@ public class DungeonServiceImpl implements DungeonService {
 
     /**
      * Génère des objets aléatoires dans chaque salle du donjon.
+     *
+     * Cette méthode crée des objets de type Potion et EncounterCharacter en fonction de la position de la salle dans le donjon.
+     * Les salles les plus éloignées ont plus de chances d'avoir des objets.
+     * Chaque salle peut contenir entre 1 et 4 objets, ainsi qu'un unique EncounterCharacter avec 25% de chance.
+     * Si aucun objet n'est généré, un EncounterCharacter est ajouté à la salle avec 100% de chance.
+     *
      * @param rooms - Liste des salles du donjon
      * @param contentService - Service de contenu pour obtenir les descriptions des objets dans la langue du joueur
      */
     private void generateItems(List<Room> rooms, ContentService contentService) {
+
         // On calcule la position maximale dans le donjon pour pondérer la génération d'objets
         int maxDungeonPosition = rooms.stream()
                 .mapToInt(Room::getDungeonPosition)
                 .max()
                 .orElse(0);
 
+        // Pour chaque salle, on génère des objets
         rooms.forEach(room -> {
-            // Les salles les plus éloignées ont plus de chances d'avoir des objets.
+            List<Item> items = new ArrayList<>();
+            // Les salles les plus éloignées ont plus de chances d'avoir des objets de type Potion et EncounterCharacter.
             if (RandomUtils.randomMax(maxDungeonPosition) <= room.getDungeonPosition()) {
-                // On génère un nombre aléatoire d'objets entre 1 et 5.
-                int numberOfItems = RandomUtils.randomBetween(1, Math.min(5, room.getDungeonPosition() + 1));
+                // On génère un nombre aléatoire d'objets entre 1 et 4.
+                int numberOfItems = RandomUtils.randomBetween(1, Math.min(4, room.getDungeonPosition() + 1));
 
-                // Génération d'objets aléatoires
-                List<Item> items = new ArrayList<>();
+                // Génération d'objets aléatoires de type Potion
                 for (int i = 0; i < numberOfItems; i++) {
                     // On génère un objet de type Potion aléatoire
                     PotionType potionType = PotionType.getRandomPotionType();
                     items.add(new Potion(potionType, contentService));
 
-                    // On ajoute un unique objet de type EncounterCharacter
-                    boolean hasEncounterCharacter = items.stream()
-                            .anyMatch(item -> item instanceof EncounterCharacter);
-                    boolean randomChance = RandomUtils.randomMax(100) < 100; // 100% de chance d'avoir un EncounterCharacter
-                    if (!hasEncounterCharacter && randomChance) {
-                        EncounterCharacterType encounterCharacterType = EncounterCharacterType.getRandomEncounterCharacterType();
-                        items.add(new EncounterCharacter(encounterCharacterType, contentService));
-                    }
                 }
+                // Génération d'un unique objet aléatoire de type EncounterCharacter (25% de chance)
+                boolean hasEncounterCharacter = items.stream()
+                        .anyMatch(item -> item instanceof EncounterCharacter);
+                boolean randomChance = RandomUtils.randomMax(100) < 25; // 25% de chance d'avoir un EncounterCharacter
+                if (!hasEncounterCharacter && randomChance) {
+                    EncounterCharacterType encounterCharacterType = EncounterCharacterType.getRandomEncounterCharacterType();
+                    items.add(new EncounterCharacter(encounterCharacterType, contentService));
+                }
+
                 // On ajoute les objets à la salle
                 room.setItems(items);
             } else {
-                room.setItems(new ArrayList<>());
+                // Si aucun objets, génération d'un unique objet aléatoire de type EncounterCharacter (100% de chance)
+                boolean randomChance = RandomUtils.randomMax(100) < 100; // 100% de chance d'avoir un EncounterCharacter
+                if (randomChance) {
+                    EncounterCharacterType encounterCharacterType = EncounterCharacterType.getRandomEncounterCharacterType();
+                    items.add(new EncounterCharacter(encounterCharacterType, contentService));
+                }
+                room.setItems(items);
             }
         });
     }
@@ -373,6 +388,8 @@ public class DungeonServiceImpl implements DungeonService {
 
     /**
      * Retourne une liste des types d'ennemis possibles en fonction de la position de la salle dans le donjon.
+     * Cette méthode utilise des règles prédéfinies pour déterminer les types d'ennemis qui peuvent apparaître dans chaque salle.
+     *
      * @param dungeonPosition - Position de la salle dans le donjon
      * @return - Liste des types d'ennemis possibles
      */
@@ -380,16 +397,20 @@ public class DungeonServiceImpl implements DungeonService {
 
         switch (dungeonPosition) {
             case 0, 1 -> {
-                return Collections.emptyList(); // Pas d'ennemis
+                // Pas d'ennemis
+                return Collections.emptyList();
             }
             case 2, 3, 4 -> {
-                return List.of(EnemyType.ZOMBIE, EnemyType.SKELETON);
+                // Ennemis possibles dans les salles 2, 3 et 4 : Zombie 66%, Squelette 33%.
+                return List.of(EnemyType.ZOMBIE, EnemyType.ZOMBIE, EnemyType.SKELETON);
             }
             case 5, 6, 7 -> {
-                return List.of(EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.LICH);
+                // Ennemis possibles dans les salles 5, 6 et 7 : Squelette 50%, Vampire 33%, Liche 16% (en cas de liche, filtre un seul adversaire par la suite).
+                return List.of(EnemyType.SKELETON, EnemyType.SKELETON, EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.VAMPIRE, EnemyType.LICH);
             }
             default -> {
-                return List.of(EnemyType.VAMPIRE, EnemyType.LICH);
+                // Ennemis possibles dans les salles 8 et suivantes : Vampire 75%, Liche 25%.
+                return List.of(EnemyType.VAMPIRE, EnemyType.VAMPIRE, EnemyType.VAMPIRE, EnemyType.LICH);
             }
         }
 
