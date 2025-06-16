@@ -8,24 +8,35 @@ import com.rva.dungeon.utils.random.RandomUtils;
 public class Potion extends Item {
 
     private final PotionType potionType;
-    private int life;
-    private int health;
-    private int strength;
-    private int defense;
+    private int amount;
+
+    private static final int HEALTH_ADJUST_PERCENTAGE = 25;
+    private static final int STRENGTH_ADJUST_PERCENTAGE = 40;
+    private static final int DEFENSE_ADJUST_PERCENTAGE = 40;
+    private static final int LIFE_ADJUST_PERCENTAGE = 25;
+
 
     public Potion(PotionType potionType, ContentService contentService) {
         super(potionType.getTypeName(contentService));
         this.potionType = potionType;
         // Adjust the potion attributes by a percentage to add variability
-        this.life = RandomUtils.adjustByPercentage(potionType.getLife(), 25);
-        this.health = RandomUtils.adjustByPercentage(potionType.getHealth(), 25);
-        this.strength = RandomUtils.adjustByPercentage(potionType.getStrength(), 40);
-        this.defense = RandomUtils.adjustByPercentage(potionType.getDefense(), 40);
         switch (potionType) {
-            case HEALTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_DESCRIPTION, getHealth()));
-            case STRENGTH -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_DESCRIPTION, getStrength()));
-            case DEFENSE -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_DESCRIPTION, getDefense()));
-            case LIFE -> setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_DESCRIPTION, getLife()));
+            case HEALTH :
+                this.amount = RandomUtils.adjustByPercentage(potionType.getAmount(), HEALTH_ADJUST_PERCENTAGE);
+                setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_HEALTH_POTION_DESCRIPTION, getAmount()));
+                break;
+            case STRENGTH :
+                this.amount = RandomUtils.adjustByPercentage(potionType.getAmount(), STRENGTH_ADJUST_PERCENTAGE);
+                setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_STRENGTH_POTION_DESCRIPTION, getAmount()));
+                break;
+            case DEFENSE :
+                this.amount = RandomUtils.adjustByPercentage(potionType.getAmount(), DEFENSE_ADJUST_PERCENTAGE);
+                setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_DEFENSE_POTION_DESCRIPTION, getAmount()));
+                break;
+            case LIFE :
+                this.amount = RandomUtils.adjustByPercentage(potionType.getAmount(), LIFE_ADJUST_PERCENTAGE);
+                setDescription(contentService.getFormattedString(ContentKey.COMMON_ITEM_LIFE_POTION_DESCRIPTION, getAmount()));
+                break;
         }
     }
 
@@ -33,46 +44,17 @@ public class Potion extends Item {
         return potionType;
     }
 
-    public int getLife() {
-        return life;
+    public int getAmount() {
+        return amount;
     }
 
-    public void setLife(int life) {
-        this.life = life;
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public int getStrength() {
-        return strength;
-    }
-
-    public void setStrength(int strength) {
-        this.strength = strength;
-    }
-
-    public int getDefense() {
-        return defense;
-    }
-
-    public void setDefense(int defense) {
-        this.defense = defense;
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 
     @Override
     public String toString() {
-        return switch (potionType) {
-            case HEALTH -> getName() + " (" + health + ")";
-            case STRENGTH -> getName() + " (" + strength + ")";
-            case DEFENSE -> getName() + " (" + defense + ")";
-            case LIFE -> getName() + " (" + life + ")";
-        };
+        return getName() + " (" + amount + ")";
     }
 
 }

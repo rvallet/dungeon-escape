@@ -8,23 +8,17 @@ import java.util.List;
 
 public enum PotionType {
 
-    HEALTH(ContentKey.POTION_TYPE_1, 25, 0, 0, 0),
-    STRENGTH(ContentKey.POTION_TYPE_2, 0, 5, 0, 0),
-    DEFENSE(ContentKey.POTION_TYPE_3, 0, 0, 3, 0),
-    LIFE(ContentKey.POTION_TYPE_4, 0, 0, 0, 10);
+    HEALTH(ContentKey.POTION_TYPE_1, 25),
+    STRENGTH(ContentKey.POTION_TYPE_2, 5),
+    DEFENSE(ContentKey.POTION_TYPE_3, 3),
+    LIFE(ContentKey.POTION_TYPE_4, 10);
 
     private final ContentKey type;
-    private final int health;
-    private final int strength;
-    private final int defense;
-    private final int life;
+    private final int amount;
 
-    PotionType(ContentKey type, int health, int strength, int defense, int life) {
+    PotionType(ContentKey type, int amount) {
         this.type = type;
-        this.health = health;
-        this.strength = strength;
-        this.defense = defense;
-        this.life = life;
+        this.amount = amount;
     }
 
     public ContentKey getType() {
@@ -35,20 +29,8 @@ public enum PotionType {
         return contentService.getString(this.type);
     }
 
-    public int getHealth() {
-        return health;
-    }
-
-    public int getStrength() {
-        return strength;
-    }
-
-    public int getDefense() {
-        return defense;
-    }
-
-    public int getLife() {
-        return life;
+    public int getAmount() {
+        return amount;
     }
 
     public static PotionType getRandomPotionType() {
