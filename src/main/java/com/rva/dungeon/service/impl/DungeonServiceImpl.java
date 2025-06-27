@@ -371,17 +371,17 @@ public class DungeonServiceImpl implements DungeonService {
      */
     private int maxEnemies(int dungeonPosition) {
         switch (dungeonPosition) {
-            case 0, 1 -> {
+            case 0, 1, 2 -> {
                 return 0; // Pas d'ennemis dans les premières salles
             }
-            case 2, 3, 4, 5 -> {
+            case 3, 4, 5 -> {
                 return RandomUtils.randomBetween(1, 2); // 2 ennemis maximum dans ces salles
             }
-            case 6,7,8,9 -> {
+            case 6, 7, 8, 9 -> {
                 return RandomUtils.randomBetween(1, 3); // 3 ennemis maximum dans ces salles
             }
             default -> {
-                return RandomUtils.randomBetween(2, 4); // 4 ennemis maximum dans les salles finales
+                return RandomUtils.randomBetween(2, 4); // 2 à 4 ennemis maximum dans les salles finales
             }
         }
     }
@@ -396,15 +396,15 @@ public class DungeonServiceImpl implements DungeonService {
     private List<EnemyType> getPossibleEnemyTypes(int dungeonPosition) {
 
         switch (dungeonPosition) {
-            case 0, 1 -> {
+            case 0, 1, 2 -> {
                 // Pas d'ennemis
                 return Collections.emptyList();
             }
-            case 2, 3, 4 -> {
+            case 3, 4, 5 -> {
                 // Ennemis possibles dans les salles 2, 3 et 4 : Zombie 66%, Squelette 33%.
                 return List.of(EnemyType.ZOMBIE, EnemyType.ZOMBIE, EnemyType.SKELETON);
             }
-            case 5, 6, 7 -> {
+            case 6, 7, 8, 9 -> {
                 // Ennemis possibles dans les salles 5, 6 et 7 : Squelette 50%, Vampire 33%, Liche 16% (en cas de liche, filtre un seul adversaire par la suite).
                 return List.of(EnemyType.SKELETON, EnemyType.SKELETON, EnemyType.SKELETON, EnemyType.VAMPIRE, EnemyType.VAMPIRE, EnemyType.LICH);
             }
