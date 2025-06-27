@@ -154,9 +154,11 @@ public class GameServiceImpl implements GameService {
 
     /**
      * Affiche les informations du joueur
+     *
      */
     private void afficherInformationJoueur() {
         ConsoleUtils.afficher(
+                true,
                 ConsoleUtils.YELLOW +
                     player.toFormatedString(contentService) +
                     ConsoleUtils.RESET
