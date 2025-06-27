@@ -53,6 +53,44 @@ public class GameServiceImpl implements GameService {
         lancerBoucleDuJeux();
     }
 
+
+    /**
+     * Traite l'entrée utilisateur et exécute l'action correspondante
+     * @param input - l'entrée utilisateur
+     */
+    @Override
+    public synchronized void processUserInput(String input) {
+        Action action = Action.fromInput(input, contentService);
+        switch (action) {
+            case QUIT:
+                exitGame();
+                break;
+            case EXPLORE:
+                explorerSalle();
+                break;
+            case HELP:
+                afficherActionsDisponibles();
+                break;
+            case CHARACTER:
+                afficherInformationJoueur();
+                break;
+            case DIRECTION:
+                choisirDirection();
+                break;
+            case FIGHT:
+                combattreEnnemis();
+                break;
+            case INVENTORY:
+                utiliserObjetInventaire();
+                break;
+            case DEBUG:
+                explorerDonjon();
+                break;
+            case null, default:
+                ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_COMMAND_UNKNOWN));
+        }
+    }
+
     /**
      * Choisit la langue du jeu :
      * 1 : Français

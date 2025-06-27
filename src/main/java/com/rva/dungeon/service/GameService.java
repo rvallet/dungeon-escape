@@ -6,4 +6,6 @@ public interface GameService {
 
     void exitGame();
 
+    void processUserInput(String input);
+
 }
