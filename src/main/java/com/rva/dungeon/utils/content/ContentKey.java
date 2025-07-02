@@ -65,6 +65,11 @@ public enum ContentKey {
     COMMON_ANSWER_NO("common.answer.no"),
     COMMON_ANSWER_ERROR("common.answer.error"),
 
+    COMMON_ESCAPE_QUERY("common.escape.query"),
+    COMMON_ESCAPE_CONFIRMATION("common.escape.confirmation"),
+    COMMON_ESCAPE_SUCCESS("common.escape.success"),
+    COMMON_ESCAPE_FAILURE("common.escape.failure"),
+
     COMMON_ROOM_MOVE_INTO("common.room.move.into"),
     COMMON_ROOM_MOVE_OUT("common.room.move.out"),
     COMMON_ROOM_VISITED("common.room.visited"),
