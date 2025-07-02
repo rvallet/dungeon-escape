@@ -324,6 +324,10 @@ public class GameServiceImpl implements GameService {
         String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_QUERY_DIRECTION));
         Direction direction = Direction.fromInput(input, contentService);
 
+        if (!tentativeFuite()) {
+            return; // Si la tentative de fuite échoue, on ne continue pas
+        }
+
         Room currentRoom = player.getCurrentRoom();
         Room nextRoom = Room.moveToRoomInDirection(currentRoom, direction);
         if (nextRoom != null) {
@@ -359,6 +363,65 @@ public class GameServiceImpl implements GameService {
                             ConsoleUtils.RESET
             );
         }
+    }
+
+    private boolean tentativeFuite() {
+        // Vérifie s'il y a des ennemis vivants dans la salle actuelle
+        long nbAdversairesVivants = player.getCurrentRoom().getEnemies().stream()
+                .filter(Enemy::getIsAlive)
+                .count();
+        // Si des ennemis sont présents
+        if (nbAdversairesVivants > 0) {
+            // On demande au joueur s'il veut tenter de fuir la salle
+            ConsoleUtils.afficher(
+                    ConsoleUtils.RED +
+                            contentService.getString(ContentKey.COMMON_ESCAPE_QUERY) +
+                            ConsoleUtils.RESET
+            );
+
+            // Chances proportionnelles au nombre de sorties et d'ennemis vivants de déclencher un combat.
+            double ratio = (double) nbAdversairesVivants / (double) player.getCurrentRoom().getPassages().size();
+            double escapeChance;
+            if (ratio < 1.0) {
+                escapeChance = 0.75; // Si le ratio est inférieur à 1, on a 75% de chances de fuir
+            } else if (ratio == 1.0) {
+                escapeChance = 0.50; // Si le ratio est égal à 1, on a 50% de chances de fuir
+            } else {
+                escapeChance = 0.25; // Si le ratio est supérieur à 1, on a 25% de chances de fuir
+            }
+
+            while (true) {
+                // On demande au joueur s'il veut tenter de fuir et on affiche le pourcentage de chances de réussite
+                String confirmation = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_ESCAPE_CONFIRMATION), (int) Math.round(escapeChance * 100));
+
+                if (confirmation.equalsIgnoreCase(contentService.getString(ContentKey.COMMON_ANSWER_YES))) {
+                    // Si le joueur décide de tenter de sortir de la salle avec des ennemis vivants,
+                    if (Math.random() < escapeChance) {
+                        // Si le joueur réussit à fuir, on affiche un message de succès
+                        ConsoleUtils.afficherCouleur(ConsoleUtils.GREEN, contentService.getString(ContentKey.COMMON_ESCAPE_SUCCESS) + ConsoleUtils.RETOUR);
+                    } else {
+                        // Si le joueur échoue à fuir, on lance un combat avec les ennemis présents
+                        ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_ESCAPE_FAILURE) + ConsoleUtils.RETOUR);
+                        player.getCurrentRoom().getEnemies().stream()
+                                .filter(Enemy::getIsAlive)
+                                .findFirst()
+                                .ifPresent(enemy -> {
+                                    // On lance le combat avec l'ennemi vivant
+                                    player.launchFight(enemy, contentService);
+                                });
+                    }
+                    return true; // On retourne true pour indiquer que le joueur a tenté de fuir. Sortie de la boucle
+
+                } else if (confirmation.equalsIgnoreCase(contentService.getString(ContentKey.COMMON_ANSWER_NO))) {
+                    return false; // On retourne false pour indiquer que le joueur n'a pas tenté de fuir, et on continue le jeu. Sortie de la boucle
+                } else {
+                    ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_ANSWER_ERROR) + ConsoleUtils.RETOUR);
+                    // Appel récursif tant que l'utilisateur ne répond pas correctement (on reste dans la boucle while)
+                }
+            }
+
+        }
+        return true; // Si aucun ennemi n'est présent, on retourne true pour continuer le jeu
     }
 
     private void combattreEnnemis() {
