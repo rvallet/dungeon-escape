@@ -132,6 +132,20 @@ public class ConsoleUtils {
     }
 
     /**
+     * Méthode pour mettre en pause l'exécution du programme
+     * @param milliseconds - Durée de la pause en millisecondes
+     */
+    public static void pause(int milliseconds) {
+        try {
+            Thread.sleep(milliseconds);
+        } catch (InterruptedException e) {
+            logger.error("Erreur lors de la pause : {}", e.getMessage());
+            Thread.currentThread().interrupt();
+        }
+
+    }
+
+    /**
      * Colorise un message avec le code couleur spécifié
      * @param message - Message à coloriser
      * @param colorCode - Code couleur ANSI

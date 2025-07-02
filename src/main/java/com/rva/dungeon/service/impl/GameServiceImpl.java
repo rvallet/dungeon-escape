@@ -328,6 +328,12 @@ public class GameServiceImpl implements GameService {
             return; // Si la tentative de fuite échoue, on ne continue pas
         }
 
+        // Si le joueur n'est pas vivant après la tentative de fuite, on quitte le jeu
+        if (!player.getIsAlive()) {
+            exitGame();
+            return;
+        }
+
         Room currentRoom = player.getCurrentRoom();
         Room nextRoom = Room.moveToRoomInDirection(currentRoom, direction);
         if (nextRoom != null) {
@@ -408,14 +414,11 @@ public class GameServiceImpl implements GameService {
                                 .ifPresent(enemy -> {
                                     // On lance le combat avec l'ennemi vivant
                                     player.launchFight(enemy, contentService);
-                                    // On vérifie si le joueur est toujours en vie après le combat
-                                    if (!player.getIsAlive()) {
-                                        exitGame();
-                                        return;
-                                    }
                                     // Si l'ennemi est mort et qu'il a de l'or, on affiche un message de loot
-                                    if (!enemy.getIsAlive() && enemy.getGold() > 0) {
-                                        ConsoleUtils.afficher(true, ConsoleUtils.BRIGHT_YELLOW +
+                                    if (player.getIsAlive() && !enemy.getIsAlive() && enemy.getGold() > 0) {
+                                        ConsoleUtils.afficher(
+                                                true,
+                                                ConsoleUtils.BRIGHT_YELLOW +
                                                 contentService.getFormattedString(ContentKey.COMMON_FIGHT_ENEMY_LOOT, player.getName(), enemy.getGold(), enemy.getName()));
                                         player.setGold(player.getGold() + enemy.getGold());
                                         enemy.setGold(0);
@@ -609,6 +612,8 @@ public class GameServiceImpl implements GameService {
     public void exitGame() {
         this.gameStarted = false;
         ConsoleUtils.afficherCouleur(ConsoleUtils.RED, contentService.getString(ContentKey.COMMON_GOODBYE), player.getName());
+        // On fait une pause pour que le joueur puisse lire le message avant de quitter
+        ConsoleUtils.pause(3000);
     }
 
 }
