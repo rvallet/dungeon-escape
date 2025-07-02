@@ -408,6 +408,18 @@ public class GameServiceImpl implements GameService {
                                 .ifPresent(enemy -> {
                                     // On lance le combat avec l'ennemi vivant
                                     player.launchFight(enemy, contentService);
+                                    // On vérifie si le joueur est toujours en vie après le combat
+                                    if (!player.getIsAlive()) {
+                                        exitGame();
+                                        return;
+                                    }
+                                    // Si l'ennemi est mort et qu'il a de l'or, on affiche un message de loot
+                                    if (!enemy.getIsAlive() && enemy.getGold() > 0) {
+                                        ConsoleUtils.afficher(true, ConsoleUtils.BRIGHT_YELLOW +
+                                                contentService.getFormattedString(ContentKey.COMMON_FIGHT_ENEMY_LOOT, player.getName(), enemy.getGold(), enemy.getName()));
+                                        player.setGold(player.getGold() + enemy.getGold());
+                                        enemy.setGold(0);
+                                    }
                                 });
                     }
                     return true; // On retourne true pour indiquer que le joueur a tenté de fuir. Sortie de la boucle
