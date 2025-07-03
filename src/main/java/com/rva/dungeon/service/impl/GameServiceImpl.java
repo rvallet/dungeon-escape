@@ -324,19 +324,22 @@ public class GameServiceImpl implements GameService {
         String input = ConsoleUtils.demanderCouleur(ConsoleUtils.MAGENTA, contentService.getString(ContentKey.COMMON_QUERY_DIRECTION));
         Direction direction = Direction.fromInput(input, contentService);
 
-        if (!tentativeFuite()) {
-            return; // Si la tentative de fuite échoue, on ne continue pas
-        }
-
-        // Si le joueur n'est pas vivant après la tentative de fuite, on quitte le jeu
-        if (!player.getIsAlive()) {
-            exitGame();
-            return;
-        }
-
         Room currentRoom = player.getCurrentRoom();
         Room nextRoom = Room.moveToRoomInDirection(currentRoom, direction);
         if (nextRoom != null) {
+
+            // Si le joueur tente de fuir la salle actuelle, on lance la tentative de fuite
+            if (!tentativeFuite()) {
+                return; // Si la tentative de fuite échoue, on ne continue pas
+            }
+
+            // Si le joueur n'est pas vivant après la tentative de fuite, on quitte le jeu
+            if (!player.getIsAlive()) {
+                exitGame();
+                return;
+            }
+
+            // Si le joueur a réussi à fuir ou s'il n'y avait plus d'ennemis vivants, on le déplace dans la salle suivante.
             player.setCurrentRoom(nextRoom);
             ConsoleUtils.afficher(
                     ConsoleUtils.YELLOW +
@@ -349,6 +352,8 @@ public class GameServiceImpl implements GameService {
                             nextRoom.getDescription() +
                             ConsoleUtils.RESET
             );
+
+            // Si la salle suivante a déjà été visitée, on affiche un message. Sinon, on marque la salle comme visitée.
             if (nextRoom.isVisited()) {
                 ConsoleUtils.afficher(
                         ConsoleUtils.YELLOW +
@@ -358,6 +363,7 @@ public class GameServiceImpl implements GameService {
             } else {
                 nextRoom.setIsVisited(true);
             }
+            // Si la salle suivante est une sortie, on affiche un message de victoire et on quitte le jeu.
             if (nextRoom.getIsExit()) {
                 // TODO : Afficher message de victoire
                 exitGame();
@@ -371,6 +377,12 @@ public class GameServiceImpl implements GameService {
         }
     }
 
+    /**
+     * Tente de fuir la salle actuelle si des ennemis sont présents
+     * Si le joueur réussit à fuir, il quitte la salle sans combattre
+     * Si le joueur échoue, il doit combattre les ennemis présents
+     * @return true si le joueur a tenté de fuir, false sinon
+     */
     private boolean tentativeFuite() {
         // Vérifie s'il y a des ennemis vivants dans la salle actuelle
         long nbAdversairesVivants = player.getCurrentRoom().getEnemies().stream()
