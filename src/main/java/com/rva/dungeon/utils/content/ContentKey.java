@@ -72,6 +72,7 @@ public enum ContentKey {
 
     COMMON_ROOM_MOVE_INTO("common.room.move.into"),
     COMMON_ROOM_MOVE_OUT("common.room.move.out"),
+    COMMON_ROOM_MOVE_OUT_HELL("common.room.move.out.hell"),
     COMMON_ROOM_VISITED("common.room.visited"),
     COMMON_ROOM_ERROR("common.room.move.error"),
     COMMON_ROOM_ENEMIES_ALIVE("common.room.enemies.alive"),

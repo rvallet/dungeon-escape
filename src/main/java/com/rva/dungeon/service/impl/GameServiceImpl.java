@@ -83,9 +83,15 @@ public class GameServiceImpl implements GameService {
         switch (choix){
             case "2":
                 dungeon = dungeonService.generate(RandomUtils.randomBetween(21, 50), contentService);
+                dungeon.setLevel(2);
                 break;
             case "3":
                 dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
+                dungeon.setLevel(3);
+                break;
+            case "4":
+                dungeon = dungeonService.generate(RandomUtils.randomBetween(51, 100), contentService);
+                dungeon.setLevel(4);
                 break;
             case "1":
             default:
@@ -346,17 +352,27 @@ public class GameServiceImpl implements GameService {
 
             // Si le joueur a réussi à fuir ou s'il n'y avait plus d'ennemis vivants, on le déplace dans la salle suivante.
             player.setCurrentRoom(nextRoom);
-            ConsoleUtils.afficher(
-                    ConsoleUtils.YELLOW +
-                            contentService.getString(ContentKey.COMMON_ROOM_MOVE_OUT).toLowerCase() +
-                            ConsoleUtils.SPACE +
-                            currentRoom.getName() + ConsoleUtils.SPACE +
-                            contentService.getString(ContentKey.COMMON_ROOM_MOVE_INTO).toLowerCase() +
-                            ConsoleUtils.SPACE +
-                            nextRoom.getName() + ConsoleUtils.DOT + ConsoleUtils.RETOUR +
-                            nextRoom.getDescription() +
-                            ConsoleUtils.RESET
-            );
+            if (dungeon.getLevel() < 4) {
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                contentService.getString(ContentKey.COMMON_ROOM_MOVE_OUT).toLowerCase() +
+                                ConsoleUtils.SPACE +
+                                currentRoom.getName() + ConsoleUtils.SPACE +
+                                contentService.getString(ContentKey.COMMON_ROOM_MOVE_INTO).toLowerCase() +
+                                ConsoleUtils.SPACE +
+                                nextRoom.getName() + ConsoleUtils.DOT + ConsoleUtils.RETOUR +
+                                nextRoom.getDescription() +
+                                ConsoleUtils.RESET
+                );
+            } else {
+                ConsoleUtils.afficher(
+                        ConsoleUtils.YELLOW +
+                                contentService.getString(ContentKey.COMMON_ROOM_MOVE_OUT_HELL).toLowerCase() + ConsoleUtils.DOT +
+                                ConsoleUtils.RETOUR +
+                                nextRoom.getDescription() +
+                                ConsoleUtils.RESET
+                );
+            }
 
             // Si la salle suivante a déjà été visitée, on affiche un message. Sinon, on marque la salle comme visitée.
             if (nextRoom.isVisited()) {
