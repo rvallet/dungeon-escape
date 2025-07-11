@@ -281,7 +281,12 @@ public class GameServiceImpl implements GameService {
         dungeon.getRooms().forEach(room -> {
             // Crée une liste de descriptions pour chaque passage
             String passagesListe = room.getPassages().stream()
-                    .map(p -> p.getDirection().getContent(contentService))
+                    .map(p -> {
+                                String direction = p.getDirection().getContent(contentService);
+                                String targetRoomName = p.getRoom().getName();
+                                return direction + ConsoleUtils.OPEN_PARENTHESIS + targetRoomName + ConsoleUtils.CLOSE_PARENTHESIS;
+                            }
+                    )
                     .collect(Collectors.joining(", "));
             String passages = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_PASSAGES, ConsoleUtils.SPACE + passagesListe);
             String position = contentService.getFormattedString(ContentKey.DUNGEON_DEBUG_POSITION, ConsoleUtils.SPACE + room.getDungeonPosition());
