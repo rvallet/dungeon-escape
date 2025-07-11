@@ -5,6 +5,7 @@ import java.util.List;
 public class Dungeon {
 
     private List<Room> rooms;
+    private int level = 1;
 
     public Dungeon(List<Room> rooms) {
         this.rooms = rooms;
@@ -16,6 +17,14 @@ public class Dungeon {
 
     public void setRooms(List<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
 }
