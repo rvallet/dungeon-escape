@@ -350,16 +350,16 @@ public class DungeonServiceImpl implements DungeonService {
             }
         }
 
-        // Si des liches sont présentes dans la liste sur une position inférieure à 10, on ne conserve que les liches
-        if (dungeonPosition < 10 && enemies.stream().anyMatch(e -> e.enemyType == EnemyType.LICH)) {
-            // On ne garde que les liches pour les positions inférieures à 10.
+        // Si des liches sont présentes dans la liste sur une position inférieure à 8, on ne conserve que les liches
+        if (dungeonPosition < 8 && enemies.stream().anyMatch(e -> e.enemyType == EnemyType.LICH)) {
+            // On ne garde que les liches pour les positions inférieures à 8.
             enemies.removeIf(e -> e.enemyType != EnemyType.LICH);
             if (dungeonPosition < 7 && enemies.size() > 1) {
                 // On limite à une seule liche pour les positions inférieures à 7.
                 enemies.subList(1, enemies.size()).clear();
             }
-
         }
+        // Pour les positions supérieures à 7, on garde tous les adversaires prévus.
 
         return enemies;
     }
